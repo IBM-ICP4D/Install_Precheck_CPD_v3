@@ -1,0 +1,24 @@
+## Checking if luks is enabled
+
+---
+- hosts: all
+  gather_facts: yes
+
+  roles:
+    - akirak.coreos-python
+
+  tasks:
+  - name: Populate Variable
+    shell: lsblk -f | grep 'crypto_LUKS'
+    register: luks_device
+
+  - debug:
+      var: luks_device.stdout
+
+  - name: Check luks enabled
+    shell: grep 'crypto_LUKS' <<< "{{ luks_device.stdout }}" | wc -l
+    register: num_luks
+    failed_when: num_luks.stdout == 0
+
+  - debug:
+      var: num_luks.stdout

@@ -1,0 +1,13 @@
+## Checking connectivity to IBM Artifactory server
+---
+- hosts: all
+  gather_facts: yes
+
+  vars_files:
+    - ../vars/globals.yml
+
+  tasks:
+  - name: Check IBM Artifactory
+    shell: ping -c 1 {{ ibm_artifactory }}
+    register: output
+    failed_when: "output.rc != 0"

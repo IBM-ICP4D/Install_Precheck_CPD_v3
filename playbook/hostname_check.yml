@@ -1,0 +1,23 @@
+## Checking Hostname in lowercase characters
+---
+- hosts: all
+  gather_facts: yes
+
+  roles:
+    - akirak.coreos-python
+
+  tasks:
+  - name: Get hostname
+    shell: hostname
+    register: name
+  - name: Populate Variable via Shell Command
+    shell: hostname | grep [A-Z] | wc -m
+    register: host
+    ignore_errors: True
+  - debug:
+       msg: "Current host settings is {{name.stdout}}. Number of capital letters = {{ host.stdout }}"
+
+  - name: Hostname Check
+    shell: echo "ERROR Only lowercase characters are supported in the hostname"
+    register: output
+    failed_when: host.stdout != "0"
