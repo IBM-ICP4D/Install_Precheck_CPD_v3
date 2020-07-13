@@ -1,1 +1,43 @@
+---
 
+sudo: yes
+docker_disk: <your docker disk /dev/xvdc>
+docker_storage: /var/lib/docker
+gluster_disk: <your gluster disk /dev/xvde>
+time_server: servertime.service.softlayer.com
+#time_server: <your time server. example, servertime.service.softlayer.com>
+master1_ip: <your master ip>
+yum_repository_server: <your registry server>
+
+
+#OSE YUM Repository
+yum_ose_dest: /etc/yum.repos.d/ose.repo
+yum_ose_src: ../utils/ose.repo"
+
+
+##RedHat Subscription
+redhat_username: <username>
+redhat_password: <password>
+redhat_pool_ids: <pool-id>
+
+##System Requirement
+suported_os_version: "7.6, 7.7"
+kernel_patch_level: "3.10.0-957.27.2, 3.10.0-1062"
+root_size: 50
+loadbalancer_cpucore: 4
+master_cpucore: 8
+bastion_cpucore: 8
+worker_cpucore: 16
+# RAM size in MB
+loadbalancer_ram: 8192
+bastion_ram: 16384
+master_ram: 32768
+worker_ram: 65536
+latenct_rate: 60
+docker_storage_size: 200
+ibm_artifactory: cp.icr.io
+redhat_artifactory: registry.redhat.io
+ibm_website: ibm.com
+throughput_error: 35
+
+haproxy_location: /etc/haproxy/haproxy.cfg
