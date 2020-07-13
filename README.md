@@ -91,9 +91,9 @@ Arguments:
 
 Example Script Calls: 
 
-	./pre_install_chk.sh --phase=pre_openshift
+	./pre_install_chk.sh --phase=pre_ocp
 
-	./pre_install_chk.sh --phase=post_openshift --host_type=core
+	./pre_install_chk.sh --phase=post_ocp --host_type=core
 
 # Output
 This script takes advantage of ansible playbooks to perform its checks.
