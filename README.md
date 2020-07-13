@@ -4,11 +4,11 @@ This project contains a set of pre-installation checks designed to validate that
 # Setup
 1. CLONE git repository
 ```
-git clone https://github.com/dhgaan-ibm/cp4d-dg-checks.git
+https://github.com/IBM-ICP4D/Install_Precheck_CPD_v3.git
 ```
-2. GO to cp4d-dg-checks directory
+2. GO to Install_Precheck_CPD_v3 directory
 ```
-cd cp4d-dg-checks
+cd Install_Precheck_CPD_v3
 ```
 3. SET UP hosts_openshift inventory file according to the cluster. A sample_hosts_openshift file is provided.
 ```
@@ -18,7 +18,7 @@ vi hosts_openshift
 Example file:
 ```
 [bastion]
-bastion_node_name private_ip=9.30.205.216 name=bastion type=bastion ansible_ssh_user=root
+bastion_node_name private_ip=XXX.XXX.XXX.XXX name=bastion type=bastion ansible_ssh_user=root
 
 [master]
 master0_node_name private_ip=10.87.103.68 name=master-01 type=master ansible_ssh_user=core
@@ -83,9 +83,11 @@ Arguments:
 	--phase=[pre_ocp|post_ocp|pre_cpd]                       To specify installation type
 	
 	--host_type=[core|worker|master|bastion]                 To specify nodes to check (Default is bastion).
-	The valid arguments to --host_type are the names of the groupings of nodes listed in hosts_openshift
+	                                                         The valid arguments to --host_type are the names of the groupings 
+								 of nodes listed in hosts_openshift
 
-	--compute=[worker|compute]                               To specify compute nodes as listed in hosts_openshift for kernel parameter checks (Default is worker)
+	--compute=[worker|compute]                               To specify compute nodes as listed in hosts_openshift for kernel 
+	                                                         parameter checks (Default is worker)
 
 Example Script Calls: 
 
