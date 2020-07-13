@@ -4,7 +4,7 @@ This project contains a set of pre-installation checks designed to validate that
 # Setup
 1. CLONE git repository
 ```
-https://github.com/IBM-ICP4D/Install_Precheck_CPD_v3.git
+git clone https://github.com/IBM-ICP4D/Install_Precheck_CPD_v3.git
 ```
 2. GO to Install_Precheck_CPD_v3 directory
 ```
