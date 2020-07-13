@@ -1,0 +1,24 @@
+[bastion]
+bastion_node_name private_ip=9.30.205.216 name=bastion type=bastion ansible_ssh_user=root
+
+[master]
+master0_node_name private_ip=10.87.103.68 name=master-01 type=master ansible_ssh_user=core
+master1_node_name private_ip=10.87.103.123 name=master-02 type=master ansible_ssh_user=core
+master2_node_name private_ip=10.87.103.121 name=master-03 type=master ansible_ssh_user=core
+
+[worker]
+worker0_node_name private_ip=10.87.103.117 name=worker-01 type=worker ansible_ssh_user=core
+worker1_node_name private_ip=10.87.103.108 name=worker-02 type=worker ansible_ssh_user=core
+worker2_node_name private_ip=10.87.103.96 name=worker-03 type=worker ansible_ssh_user=core
+
+[core]
+master0_node_name private_ip=10.87.103.68 name=master-01 type=master ansible_ssh_user=core
+master1_node_name private_ip=10.87.103.123 name=master-02 type=master ansible_ssh_user=core
+master2_node_name private_ip=10.87.103.121 name=master-03 type=master ansible_ssh_user=core
+worker0_node_name private_ip=10.87.103.117 name=worker-01 type=worker ansible_ssh_user=core
+worker1_node_name private_ip=10.87.103.108 name=worker-02 type=worker ansible_ssh_user=core
+worker2_node_name private_ip=10.87.103.96 name=worker-03 type=worker ansible_ssh_user=core
+
+[core:vars]
+ansible_ssh_user=core
+ansible_python_interpreter=/var/home/core/pypy/bin/pypy
