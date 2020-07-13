@@ -1,0 +1,22 @@
+## Checking max size shared memory segments on Compute Node
+
+---
+- hosts: all
+  gather_facts: yes
+
+
+  roles:
+    - akirak.coreos-python
+
+  tasks:
+  - name: Populate kern_shmmax Variable
+    shell: sysctl kernel.shmmax
+    register: kern_shmmax
+
+  - debug:
+      var: kern_shmmax.stdout
+
+  - name: Check max number of shared memory segments
+    shell: grep -Eo [0-9]* <<< "{{ kern_shmmax.stdout }}"
+    register: output
+    failed_when: output.stdout|int < 68719476736
