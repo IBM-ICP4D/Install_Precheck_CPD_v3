@@ -64,8 +64,8 @@ function usage(){
 Some tests are configured to only be ran on certain groups.\033[0m"
     echo ""
     echo -e "\033[0;32mExample Script Calls:\033[0m "
-    echo "./pre_install_chk.sh --phase=pre_openshift"
-    echo "./pre_install_chk.sh --phase=post_openshift --host_type=core"
+    echo "./pre_install_chk.sh --phase=pre_ocp"
+    echo "./pre_install_chk.sh --phase=post_ocp --host_type=core"
     echo ""
     echo -e "\033[0;34mThis script takes advantage of ansible playbooks to perform its checks.
 If any test fails, you can view the results of its playbook in ${OUTPUT}
