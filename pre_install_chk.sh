@@ -17,10 +17,11 @@ installer_path=
 #Example: .<installer_path>/cpd-<os>
 
 #global variables
-GLOBAL=(https://www.ibm.com/support/knowledgecenter/SSQNUZ_3.0.1/cpd/install/node-settings.html#node-settings__lb-proxy,
-3.0.1,
-16
-)
+GLOBAL=(
+	https://www.ibm.com/support/knowledgecenter/SSQNUZ_3.0.1/cpd/install/node-settings.html#node-settings__lb-proxy
+	3.0.1
+	16
+       )
 
 #These urls should be unblocked. The function check_unblocked_urls will validate that these are reachable
 URLS=(
@@ -743,7 +744,7 @@ function check_admin_role(){
     exists=$(oc get rolebindings admin | egrep '${whoami}')
     echo "${exists}"
 
-    if [[ ${exists} -eq "" ]]; then
+    if [[ ${exists} == "" ]]; then
         log "ERROR: output of oc whoami does not exist in oc get rolebindings admin. Ask cluster-admin for binding." result
         ERROR=1
     else
@@ -762,22 +763,23 @@ function check_installer_ver(){
     echo -e "\nChecking installer version" | tee -a ${OUTPUT}
     OS=$(uname)
     OS=${OS,}
-    echo -e "Your os is ${OS}. If you get an error below that ./cpd-${OS} does not exist,
-modify the installer_path variable at the top of pre_install_chk.sh to redirect to file."
+    echo -e "Your os is ${OS}."
 
-    install_ver=$(.${installer_path}/cpd-${OS} version | grep '[0-9]\.[0-9]\.[0-9]*')  
-    install_build=$(.${installer_path}/cpd-${OS} version | grep '[0-9]*$')
+    install_ver=$(find ~/ -name cpd-${OS} -execdir {} version \; | grep -Eo '([0-9]{1,}\.)+[0-9]{1,}')
+    install_build=$(find ~/ -name cpd-${OS} -execdir {} version \; | grep -Eo '[0-9]*$')
 
-    if [[ ${install_ver} != GLOBAL[1] ]]; then
-	log "\nERROR: Installer version must be 3.0.1, current version is
-${install_ver}" result
+
+    echo -e "Installer version is ${install_ver}. Build is ${install_build}"
+    if [[ ${install_ver} != ${GLOBAL[1]} ]]; then
+	log "ERROR: Installer version must be 3.0.1, current version is ${install_ver}" result
 	ER=1
+        printout "$result"
     fi
 
-    if [[ ${install_build} -lt GLOBAL[2] ]]; then
-	log "\nERROR: Installer build must be greater than or equal to 16,
-Current build is ${install_build}" result
+    if [[ ${install_build} -lt ${GLOBAL[2]} && ${ER} -eq 0 ]]; then
+	log "ERROR: Installer build must be greater than or equal to 16" result
 	ER=1
+	printout "$result"
     fi
 
     if [[ ${ER} -eq 0 ]]; then
@@ -785,6 +787,8 @@ Current build is ${install_build}" result
     else
 	ERROR=1
     fi
+
+#    if 
 
     LOCALTEST=1
     output+="$result"
