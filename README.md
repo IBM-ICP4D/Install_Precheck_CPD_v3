@@ -132,6 +132,7 @@ The current value of the variable tested will appear under the 'debug' task for 
 | Cluster-admin user must grant the cpd-admin-role to the project administration | | | | X |
 | No user group defined under scc anyuid | system:authenticated and system:serviceaccounts should not be in scc anyuid | | | X |
 | Installer build version | Installer version should be higher than build 15 for CPD v.3.1.0 | | | X |
+| FIPS enabled | FIPS can be enable but some CPD services may need special handling | | | X |
 
 # Unblocked Urls
 The machines that are being tested should be be able to reach these links:
