@@ -799,6 +799,26 @@ function check_installer_ver(){
     
 }
 
+function check_fips_enabled(){
+    output=""
+    echo -e "\nChecking if FIPS enabled" | tee -a ${OUTPUT}
+    fips=$(cat /proc/sys/crypto/fips_enabled)
+    echo "${fips}"
+
+    if [[ ${fips} -eq 1 ]]; then
+        log "WARNING: FIPS is enabled." result
+        WARNING=1
+    else
+        log "[Passed]" result
+    fi
+    LOCALTEST=1
+    output+="$result"
+
+    if [[ ${LOCALTEST} -eq 1 ]]; then
+        printout "$output"
+    fi
+}
+
 
 #BEGIN CHECK
 PRE=0
@@ -882,6 +902,7 @@ elif [[ ${PRE_CPD} -eq 1 ]]; then
     check_cluster_admin
     check_admin_role
     check_installer_ver
+    check_fips_enabled
 fi
 
 if [[ ${ERROR} -eq 1 ]]; then
