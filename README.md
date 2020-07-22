@@ -4,7 +4,7 @@ This project contains a set of pre-installation checks designed to validate that
 # Setup
 1. CLONE git repository
 ```
-git clone https://github.com/dhgaan-ibm/cp4d-dg-checks.git
+git clone https://github.com/IBM-ICP4D/Install_Precheck_CPD_v3.git
 ```
 2. GO to cp4d-dg-checks directory
 ```
@@ -91,7 +91,8 @@ Arguments:
 	--phase=[pre_ocp|post_ocp|pre_cpd]                       To specify installation type
 	
 	--host_type=[core|worker|master|bastion]                 To specify nodes to check (Default is bastion).
-	The valid arguments to --host_type are the names of the groupings of nodes listed in hosts_openshift
+	                                                         The valid arguments to --host_type are the names 
+								 of the groupings of nodes listed in hosts_openshift.
 
 	--ocp_ver=[311]                               	 	 To specify openshift version (Default is 4.3). 
 								 This option should be used if ocp version is 3.11
