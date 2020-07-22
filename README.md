@@ -1,4 +1,4 @@
-# cp4d-dg-checks
+# Install_Precheck_CPD_v3
 # Description
 This project contains a set of pre-installation checks designed to validate that your system is compatible with RedHat Openshift 4.3.13+ and Cloud Pak 4 Data 3.0.1 installations.
 # Setup
