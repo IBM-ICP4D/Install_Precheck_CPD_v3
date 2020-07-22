@@ -1,0 +1,20 @@
+## Validating ip address
+
+---
+
+- hosts: all
+  gather_facts: yes
+
+  roles:
+    - akirak.coreos-python
+
+  vars:
+    ip_addr: "{{ hostvars[inventory_hostname]['ansible_env'].SSH_CONNECTION.split(' ')[2] }}"
+    test: "{{ ip_addr | ipaddr }}"
+  tasks:
+    - debug:
+        var: ip_addr
+    
+    - name: Validate ip address
+      shell: echo "ERROR {{ ip_addr }} is not a valid ip address."
+      failed_when: test == False

@@ -1,0 +1,54 @@
+## Network Speed
+
+---
+
+#- name: install iperf on master
+#  hosts: master[0]
+#  tasks:
+#  - name: install iperf
+#    shell: wget https://iperf.fr/download/fedora/iperf3-3.1.3-1.fc24.x86_64.rpm
+#    register: core_install
+#  - debug:
+#      var: core_install.stdout
+
+- name: run iperf server on bastion
+  hosts: bastion
+  tasks: 
+#  - name: install iperf on bastion
+#    shell: yum install -y iperf3
+#    register: output
+#    ignore_errors: yes
+#  - debug:
+#      var: output.stdout
+
+  - name: set up server 
+    shell: iperf3 -s -D -1
+    register: bast
+
+  - debug:
+      var: bast.stdout
+
+- name: run iperf client on master node
+  hosts: master[0]
+  vars: 
+    bast_ip: "{{ hostvars[groups['bastion'][0]]['ansible_env'].SSH_CONNECTION.split(' ')[2] }}"
+  tasks:
+  - debug:
+      var: bast_ip
+
+  - name: set up client
+    shell: iperf3 -c {{ bast_ip }} 
+    register: mast
+
+  - debug:
+      var: mast.stdout
+
+#- name: kill iperf
+#  hosts: bastion
+#  tasks:
+#  - name: remove iperf
+#    shell: yum remove -y iperf3
+#    register: removed
+#  - debug:
+#      var: removed.stdout
+

@@ -1,0 +1,14 @@
+## Checking Default Gateway
+---
+- hosts: all
+
+  roles:
+    - akirak.coreos-python
+
+  become: yes
+
+  tasks:
+  - name: Check default gateway
+    shell: ip route | grep default
+    register: output
+    failed_when: "output.rc != 0"

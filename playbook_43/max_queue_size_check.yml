@@ -1,0 +1,21 @@
+## Checking max size of message queue in bytes on compute node
+
+---
+- hosts: all
+  gather_facts: yes
+
+  roles:
+    - akirak.coreos-python
+
+  tasks:
+  - name: Populate msg_mnb Variable
+    shell: sysctl kernel.msgmnb
+    register: msg_mnb
+
+  - debug:
+      var: msg_mnb.stdout
+
+  - name: Check Maximum Queue Size in bytes
+    shell: grep -Eo [0-9]* <<< "{{ msg_mnb.stdout }}"
+    register: output2
+    failed_when: output2.stdout < 65536

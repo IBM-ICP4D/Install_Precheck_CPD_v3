@@ -1,0 +1,14 @@
+## Checking Clocksync Setting
+---
+- hosts: all
+
+  become: yes
+
+  roles:
+    - akirak.coreos-python
+
+  tasks:
+  - name: Check closksync
+    shell: ntpstat
+    register: output
+    failed_when: "output.rc != 0"

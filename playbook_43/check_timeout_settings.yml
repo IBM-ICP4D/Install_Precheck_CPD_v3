@@ -1,0 +1,49 @@
+## Checking timeout settings
+
+---
+- hosts: all
+  gather_facts: yes
+
+  roles:
+    - akirak.coreos-python
+
+  vars_files:
+   - ../vars/globals.yml
+
+  tasks:
+  - name: Populate client Variable
+    shell: grep 'timeout client' {{ haproxy_location }}
+    register: client
+
+  - debug:
+      var: client.stdout
+
+  - name: Populate server variable
+    shell: grep 'timeout server' {{ haproxy_location }}
+    register: server
+
+  - debug:
+      var: server.stdout
+
+  - name: Determine if client in seconds or minutes
+    shell: grep -Eo '(s$|m$)' <<< "{{ client.stdout }}"
+    register: client_time_units
+
+  - name: Check client timeout settings
+    shell: grep -Eo [0-9]* <<< "{{client.stdout }}"
+    register: client_time
+    failed_when: (client_time_units.stdout == 's' and client_time.stdout|int < 300) or
+                 (client_time_units.stdout == 'm' and client_time.stdout|int < 5)
+
+  - name: Determine if server in seconds or minutes
+    shell: grep -Eo '(s$|m$)' <<< "{{ server.stdout }}"
+    register: server_time_units
+
+  - name: Check server timeout settings
+    shell: grep -Eo [0-9]* <<< "{{server.stdout }}"
+    register: server_time
+    failed_when: (server_time_units.stdout == 's' and server_time.stdout|int < 300) or
+                 (server_time_units.stdout == 'm' and server_time.stdout|int < 5)
+
+
+
