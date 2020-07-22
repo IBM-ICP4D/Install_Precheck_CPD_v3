@@ -1,14 +1,14 @@
-# Install Precheck for CPD v.3.x
+# cp4d-dg-checks
 # Description
 This project contains a set of pre-installation checks designed to validate that your system is compatible with RedHat Openshift 4.3.13+ and Cloud Pak 4 Data 3.0.1 installations.
 # Setup
 1. CLONE git repository
 ```
-git clone https://github.com/IBM-ICP4D/Install_Precheck_CPD_v3.git
+git clone https://github.com/dhgaan-ibm/cp4d-dg-checks.git
 ```
-2. GO to Install_Precheck_CPD_v3 directory
+2. GO to cp4d-dg-checks directory
 ```
-cd Install_Precheck_CPD_v3
+cd cp4d-dg-checks
 ```
 3. SET UP hosts_openshift inventory file according to the cluster. A sample_hosts_openshift file is provided.
 ```
@@ -18,7 +18,7 @@ vi hosts_openshift
 Example file:
 ```
 [bastion]
-bastion_node_name private_ip=XXX.XXX.XXX.XXX name=bastion type=bastion ansible_ssh_user=root
+bastion_node_name private_ip=9.30.205.216 name=bastion type=bastion ansible_ssh_user=root
 
 [master]
 master0_node_name private_ip=10.87.103.68 name=master-01 type=master ansible_ssh_user=core
@@ -37,6 +37,14 @@ master2_node_name private_ip=10.87.103.121 name=master-03 type=master ansible_ss
 worker0_node_name private_ip=10.87.103.117 name=worker-01 type=worker ansible_ssh_user=core
 worker1_node_name private_ip=10.87.103.108 name=worker-02 type=worker ansible_ssh_user=core
 worker2_node_name private_ip=10.87.103.96 name=worker-03 type=worker ansible_ssh_user=core
+
+[noncore]
+master0_node_name private_ip=10.87.103.68 name=master-01 type=master ansible_ssh_user=root
+master1_node_name private_ip=10.87.103.123 name=master-02 type=master ansible_ssh_user=root
+master2_node_name private_ip=10.87.103.121 name=master-03 type=master ansible_ssh_user=root
+worker0_node_name private_ip=10.87.103.117 name=worker-01 type=worker ansible_ssh_user=root
+worker1_node_name private_ip=10.87.103.108 name=worker-02 type=worker ansible_ssh_user=root
+worker2_node_name private_ip=10.87.103.96 name=worker-03 type=worker ansible_ssh_user=root
 
 [core:vars]
 ansible_ssh_user=core
@@ -83,11 +91,11 @@ Arguments:
 	--phase=[pre_ocp|post_ocp|pre_cpd]                       To specify installation type
 	
 	--host_type=[core|worker|master|bastion]                 To specify nodes to check (Default is bastion).
-	                                                         The valid arguments to --host_type are the names of the groupings 
-								 of nodes listed in hosts_openshift
+	The valid arguments to --host_type are the names of the groupings of nodes listed in hosts_openshift
 
-	--compute=[worker|compute]                               To specify compute nodes as listed in hosts_openshift for kernel 
-	                                                         parameter checks (Default is worker)
+	--ocp_ver=[311]                               	 	 To specify openshift version (Default is 4.3). 
+								 This option should be used if ocp version is 3.11
+								 or machines in the cluster are not core machines"
 
 Example Script Calls: 
 
@@ -110,6 +118,7 @@ The current value of the variable tested will appear under the 'debug' task for 
 | Disk Throughput | 1 Gb/sec | X | | |
 | DNS Configuration | DNS must be enabled | X | | |
 | Resolving hostname via DNS | Hostname resolution enabled | X | X | |
+| Hostname in lowercase letters | Hostname must be all lowercase | X | | |
 | Default Gateway | Route for default gateway exists | X | | |
 | Validate Internet Connectivity | | X | | |
 | Valid IPs | | X | | |
