@@ -1,0 +1,23 @@
+## Checking semaphore limit on Compute Node
+
+---
+- hosts: all
+  gather_facts: yes
+
+
+#  roles:
+#    - akirak.coreos-python
+
+  tasks:
+  - name: Populate kern_sem Variable
+    shell: sysctl kernel.sem 
+    register: kern_sem
+
+  - debug:
+      msg: "{{ kern_sem.stdout.split('\t') }}"
+
+  - name: Check Kernel Semaphore parameter
+    shell: echo "kernel semaphore parameter is not properly configured."
+    register: output
+#    failed_when: kern_sem.stdout != "kernel.sem = 250\t1024000\t100\t16384"
+    failed_when: kern_sem.stdout.split('\t')[0].split(' ')[2]|int < 250 or kern_sem.stdout.split('\t')[1]|int < 1024000 or kern_sem.stdout.split('\t')[2]|int < 100 or kern_sem.stdout.split('\t')[3]|int < 16384

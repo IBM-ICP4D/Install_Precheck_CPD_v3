@@ -1,0 +1,11 @@
+## Checking Clocksync Setting
+---
+- hosts: all
+
+  become: yes
+
+  tasks:
+  - name: Check closksync
+    shell: ntpstat
+    register: output
+    failed_when: "output.rc != 0"

@@ -1,0 +1,21 @@
+## Checking Kernel Virtual Memory
+
+---
+- hosts: all
+  gather_facts: yes
+
+#  roles:
+#    - akirak.coreos-python
+
+  tasks:
+  - name: Populate Variable
+    shell: sysctl vm.max_map_count
+    register: vm
+    
+  - debug:
+      var: vm.stdout
+
+  - name: Check Kernel VM
+    shell: grep -Eo [0-9]* <<< "{{ vm.stdout }}"
+    register: output
+    failed_when: output.stdout < 262144

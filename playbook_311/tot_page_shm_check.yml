@@ -1,0 +1,22 @@
+## Checking total allowable number of shared memory pages on Compute Node
+
+---
+- hosts: all
+  gather_facts: yes
+
+
+#  roles:
+#    - akirak.coreos-python
+
+  tasks:
+  - name: Populate kern_shmall Variable
+    shell: sysctl kernel.shmall
+    register: kern_shmall
+
+  - debug:
+      var: kern_shmall.stdout
+
+  - name: Check total number of shared memory pages
+    shell: grep -Eo [0-9]* <<< "{{ kern_shmall.stdout }}"
+    register: output
+    failed_when: output.stdout|int < 33554432

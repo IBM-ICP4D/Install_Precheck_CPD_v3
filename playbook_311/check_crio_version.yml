@@ -1,0 +1,30 @@
+## Checking cri_o version
+
+---
+- hosts: all
+  gather_facts: yes
+
+#  roles:
+#    - akirak.coreos-python
+
+  tasks:
+  - name: Populate Variable
+    shell: crio --version
+    register: version
+
+  - debug:
+      var: version.stdout
+
+  - name: Check cri-o Version on Ansible 2.4-
+    shell: grep -Eo '1\.[0-9]{1,2}' <<< "{{ version.stdout }}"
+    register: output
+    failed_when: output.stdout | version_compare('1.13', '<')
+    ignore_errors: yes
+
+  - debug:
+      var: output.stdout
+
+  - name: Check cri-o Version on Ansible 2.5+
+    shell: echo "This test should work if previous check failed due to older Ansible installion."
+    failed_when: output.stdout is version('1.13', '<')
+    ignore_errors: yes
