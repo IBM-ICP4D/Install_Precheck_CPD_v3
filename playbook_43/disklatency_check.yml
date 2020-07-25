@@ -1,7 +1,7 @@
 ## Checking Disk latency
 ---
 - hosts: all
-  gather_facts: yes
+  gather_facts: false
 
   roles:
     - akirak.coreos-python
@@ -20,6 +20,8 @@
   - debug:
        msg: "Disk latency is {{disk_latency.stdout_lines}}"
 
+  - debug:
+      var: latencyrate
   - name: Disk Latency Check
     shell: echo "ERROR Disk latency test failed. By copying 512 kB, the time must be shorter than 60s, recommended to be shorter than 10s"
     register: output

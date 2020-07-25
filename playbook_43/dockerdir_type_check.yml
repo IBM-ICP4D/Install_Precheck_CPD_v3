@@ -1,6 +1,7 @@
 ## Checking XFS FSTYPE for docker storage
 ---
 - hosts: all
+  gather_facts: false
 
   roles:
     - akirak.coreos-python

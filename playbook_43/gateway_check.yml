@@ -1,6 +1,7 @@
 ## Checking Default Gateway
 ---
 - hosts: all
+  gather_facts: false
 
   roles:
     - akirak.coreos-python

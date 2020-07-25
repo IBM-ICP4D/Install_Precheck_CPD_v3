@@ -1,6 +1,7 @@
 ## Check resolving hostname via  DNS
 ---
 - hosts: all
+  gather_facts: false
 
   roles:
     - akirak.coreos-python

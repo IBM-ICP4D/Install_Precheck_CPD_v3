@@ -2,7 +2,7 @@
 
 ---
 - hosts: all
-  gather_facts: yes
+  gather_facts: false
 
   roles:
     - akirak.coreos-python

@@ -10,7 +10,7 @@ rm -f ${ANSIBLEOUT}
 #user variables, modify these to change the default hosts you would like this script to run on
 hosts=bastion
 compute=worker #Used in post_ocp, pre_cpd checks for kernel checks
-load_balance=bastion #Used in timeout settings check
+load_balance=bastion #Used in timeout settings check, clocksync check
 core=core #Used in disk_encryption check
 
 #global variables
@@ -270,10 +270,20 @@ function validate_network_speed(){
 
     bandwidth=$(grep '0.00-10.00' ${ANSIBLEOUT} | grep -Eo '[0-9]*\.[0-9]*\sGbits/sec' | awk "NR==11")
 
+    echo -e "${bandwidth}"
     log "NOTE: Bandwidth between bastion and master node is ${bandwidth}" result
     cat ${ANSIBLEOUT} >> ${OUTPUT}
-    LOCALTEST=1
     output+="$result"
+
+    bw_number=$(echo "$bandwidth" | awk -F. '{print $1}')
+
+    if [[ ${bw_number} -lt 1 ]]; then
+	log "WARNING: Bandwidth between bastion and master is below 1GB" result1
+	WARNING=1
+	printout "$result1"
+    fi
+
+    LOCALTEST=1
 
     if [[ ${LOCALTEST} -eq 1 ]]; then
         printout "$output"
@@ -600,12 +610,12 @@ function check_fix_clocksync(){
     #    echo -e "\nFixing timesync status" | tee -a ${OUTPUT}
     #    ansible-playbook -i hosts_openshift -l ${hosts} playbook/clocksync_fix.yml > ${ANSIBLEOUT}
     #else
-    echo -e "\nChecking timesync status" | tee -a ${OUTPUT}
+    echo -e "\nChecking timesync status. This is checking the bastion node." | tee -a ${OUTPUT}
     
     if [[ ${OCP_311} -eq 1 ]] ; then
-    	ansible-playbook -i hosts_openshift -l ${hosts} playbook_311/clocksync_check.yml > ${ANSIBLEOUT}
+    	ansible-playbook -i hosts_openshift -l ${load_balance} playbook_311/clocksync_check.yml > ${ANSIBLEOUT}
     else 
-	ansible-playbook -i hosts_openshift -l ${hosts} playbook_43/clocksync_check.yml > ${ANSIBLEOUT}
+	ansible-playbook -i hosts_openshift -l ${load_balance} playbook_43/clocksync_check.yml > ${ANSIBLEOUT}
     fi
     
 #    fi
@@ -1041,6 +1051,45 @@ function check_fips_enabled(){
     fi
 }
 
+function node_dnsresolve(){
+    output=""
+    UNRESOLVED=0
+    echo -e "\nChecking that all node names are resolved by DNS" | tee -a ${OUTPUT}
+    master_nodes=$(awk '/\[master\]/,/^$/' hosts_openshift | tail -n +2)
+    echo -e "${master_nodes}" | while read -r line ; do
+	node_name=$(echo "${line}" | awk '{$1}')
+	look_up=$(nslookup ${node_name} | grep "server can't find" | wc -l)
+	if [[ ${look_up} -gt 0 ]]; then
+	    UNRESOLVED=1
+	    ERROR=1
+	    log "ERROR: ${node_name} is unresolved by dns" result
+	    printout "${result}"
+	fi
+    done
+    workers=$(awk '/\[worker\]/,/^$/' hosts_openshift | tail -n +2)
+    echo -e "${workers}" | while read -r line ; do
+	echo "${line}"
+        node_name=$(echo "${line}" | awk '{$1}')
+        look_up=$(nslookup ${node_name} | grep "Name" | wc -l)
+        if [[ ${look_up} -gt 0 ]]; then
+            UNRESOLVED=1
+	    ERROR=1
+            log "ERROR: ${node_name} is unresolved by dns" result
+            printout "${result}"
+        fi
+    done
+
+    if [[ ${UNRESOLVED} -eq 0 ]]; then
+	log "[Passed]" result
+    fi
+    LOCALTEST=1
+    output+="$result"
+       
+    if [[ ${LOCALTEST} -eq 1 && ${UNRESOLVED} -eq 0 ]]; then
+        printout "$output"
+    fi
+}
+
 
 #BEGIN CHECK
 PRE=0
@@ -1100,11 +1149,8 @@ fi
 
 if [[ ${PRE} -eq 1 ]]; then
     validate_internet_connectivity
-    validate_ips
-    validate_network_speed
-    check_subnet
+#    node_dnsresolve
     check_dnsconfiguration
-    check_processor
     check_dnsresolve
     check_gateway
     check_hostname
@@ -1112,16 +1158,20 @@ if [[ ${PRE} -eq 1 ]]; then
     check_diskthroughput
     check_dockerdir_type
     check_unblocked_urls
+    check_processor
+    validate_ips
+    check_subnet
+    validate_network_speed
 elif [[ ${POST} -eq 1 ]]; then
     check_openshift_version
     check_fix_clocksync
-    check_processor
     check_dnsresolve
     check_timeout_settings
     check_crio_version
     check_disk_encryption
     check_max_files
     check_max_process
+    check_processor
 elif [[ ${PRE_CPD} -eq 1 ]]; then
     check_kernel_vm
     check_message_limit
