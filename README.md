@@ -6,16 +6,16 @@ This project contains a set of pre-installation checks designed to validate that
 ```
 git clone https://github.com/IBM-ICP4D/Install_Precheck_CPD_v3.git
 ```
-2. GO to cp4d-dg-checks directory
+2. GO to Install_Precheck_CPD_v3 directory
 ```
-cd cp4d-dg-checks
+cd Install_Precheck_CPD_v3
 ```
 3. SET UP hosts_openshift inventory file according to the cluster. A sample_hosts_openshift file is provided.
 ```
 vi hosts_openshift
 ```
 	
-Example file:
+sample_hosts_openshift file:
 ```
 [bastion]
 bastion_node_name private_ip=9.30.205.216 name=bastion type=bastion ansible_ssh_user=root
@@ -38,23 +38,51 @@ worker0_node_name private_ip=10.87.103.117 name=worker-01 type=worker ansible_ss
 worker1_node_name private_ip=10.87.103.108 name=worker-02 type=worker ansible_ssh_user=core
 worker2_node_name private_ip=10.87.103.96 name=worker-03 type=worker ansible_ssh_user=core
 
-[noncore]
-master0_node_name private_ip=10.87.103.68 name=master-01 type=master ansible_ssh_user=root
-master1_node_name private_ip=10.87.103.123 name=master-02 type=master ansible_ssh_user=root
-master2_node_name private_ip=10.87.103.121 name=master-03 type=master ansible_ssh_user=root
-worker0_node_name private_ip=10.87.103.117 name=worker-01 type=worker ansible_ssh_user=root
-worker1_node_name private_ip=10.87.103.108 name=worker-02 type=worker ansible_ssh_user=root
-worker2_node_name private_ip=10.87.103.96 name=worker-03 type=worker ansible_ssh_user=root
+#THE [ROOT] GROUP IS FOR USERS WHO HAVE MACHINES THAT DO NOT RUN COREOS. IF THE MACHINES IN YOUR
+#CLUSTER ALL USE COREOS(I.E. OPENSHIFT 4.3), THEN YOU MAY LEAVE THIS GROUP COMMENTED OUT OR DELETED.
+#IF YOUR MACHINES DO NOT RUN COREOS, YOU WILL NEED TO:
+# 1. UNCOMMENT THE [ROOT] GROUP
+# 2. COMMENT OUT OR DELETE THE [CORE] GROUP
+# 3. CHANGE THE ANSIBLE_SSH_USER FIELDS OF YOUR [MASTER] AND [WORKER] GROUPS TO root
+
+#[root]
+#master0_node_name private_ip=10.87.103.68 name=master-01 type=master ansible_ssh_user=root
+#master1_node_name private_ip=10.87.103.123 name=master-02 type=master ansible_ssh_user=root
+#master2_node_name private_ip=10.87.103.121 name=master-03 type=master ansible_ssh_user=root
+#worker0_node_name private_ip=10.87.103.117 name=worker-01 type=worker ansible_ssh_user=root
+#worker1_node_name private_ip=10.87.103.108 name=worker-02 type=worker ansible_ssh_user=root
+#worker2_node_name private_ip=10.87.103.96 name=worker-03 type=worker ansible_ssh_user=root
 
 [core:vars]
 ansible_ssh_user=core
 ansible_python_interpreter=/var/home/core/pypy/bin/pypy
 ```
+Example Cluster:
+- RHCOS master node named master0.example.com with ip address=10.87.103.97
+- RHCOS worker node named worker0.example.com with ip address=10.87.103.100
+- RHEL bastion node named bastion.example.com with ip address=10.87.103.98
+
+Example hosts_openshift file:
+```
+[bastion]
+bastion.example.com private_ip=10.87.103.98 name=bastion type=bastion ansible_ssh_user=root
+
+[master]
+master0.example.com private_ip=10.87.103.97 name=master-01 type=master ansible_ssh_user=core
+
+[worker]
+worker0.example.com private_ip=10.87.103.100 name=worker-01 type=worker ansible_ssh_user=core
+
+[core:vars]
+ansible_ssh_user=core
+ansible_python_interpreter=/var/home/core/pypy/bin/pypy
+```
+
 4. RUN setup_bastion.sh
 ```	
 ./setup_bastion.sh
 ```
-Since RHCOS machines do not have the necessary python libraries to run the pre-checks, this script will prep the machines with an ansible-galaxy 	install. After you are done with all checks, run:
+Since RHCOS machines do not have the necessary python libraries to run the pre-checks, this script will prep the machines with an ansible-galaxy 	install. After you are done with all pre-install checks, you may run:
 ```
 ./setup_bastion.sh -r
 ```
@@ -76,6 +104,10 @@ Make sure the core machine you are installing to is the node listed at the top o
 ```
 scp iperf3-3.1.3-1.fc24.x86_64.rpm core@<master_node_name>:~/ 
 ```
+If your master 1 is called master0.example.com, then the code will be:
+```
+scp iperf3-3.1.3-1.fc24.x86_64.rpm core@master0.example.com:~/ 
+```
 Then run these commands on the core master node to complete the install:
 ```
 sudo rpm-ostree install iperf3-3.1.3-1.fc24.x86_64.rpm
@@ -90,7 +122,7 @@ Arguments:
 
 	--phase=[pre_ocp|post_ocp|pre_cpd]                       To specify installation type
 	
-	--host_type=[core|worker|master|bastion]                 To specify nodes to check (Default is bastion).
+	--host_type=[core|worker|master|bastion|root]            To specify nodes to check (Default is bastion).
 	                                                         The valid arguments to --host_type are the names 
 								 of the groupings of nodes listed in hosts_openshift.
 
@@ -173,3 +205,6 @@ If certain tests fail, these links should be able to help address some issues:
 
 	https://www.ibm.com/support/knowledgecenter/SSQNUZ_3.0.1/cpd/install/node-settings.html#node-settings__lb-proxy for changing load balancer timeout settings and compute node docker container settings.
 	https://www.ibm.com/support/knowledgecenter/SSEPGG_11.5.0/com.ibm.db2.luw.qb.server.doc/doc/t0008238.html for updating kernel parameters on compute nodes
+
+# Issue
+If you find any bugs or issues in the script, please open an issue on this repository and we will address it as soon as possible.
