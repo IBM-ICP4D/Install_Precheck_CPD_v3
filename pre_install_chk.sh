@@ -72,7 +72,7 @@ function usage(){
     echo "
 	--phase=[pre_ocp|post_ocp|pre_cpd]                       To specify installation type"
     echo "	
-	--host_type=[core|worker|master|bastion]                 To specify nodes to check (Default is bastion).
+	--host_type=[core|worker|master|bastion|root]            To specify nodes to check (Default is bastion).
 								 The valid arguments to --host_type are the names 
   								 of the groupings of nodes listed in hosts_openshift"
     echo "
@@ -1055,10 +1055,20 @@ function node_dnsresolve(){
     output=""
     UNRESOLVED=0
     echo -e "\nChecking that all node names are resolved by DNS" | tee -a ${OUTPUT}
-    master_nodes=$(awk '/\[master\]/,/^$/' hosts_openshift | tail -n +2)
-    echo -e "${master_nodes}" | while read -r line ; do
-	node_name=$(echo "${line}" | awk '{$1}')
-	look_up=$(nslookup ${node_name} | grep "server can't find" | wc -l)
+    master_nodes=($(awk '/\[master\]/,/^$/' hosts_openshift | tail -n +2))
+
+    for index in "${!master_nodes[@]}" ; do [[ ${master_nodes[$index]} =~ ^private_ip ]] && unset -v 'master_nodes[$index]' ; done
+    for index in "${!master_nodes[@]}" ; do [[ ${master_nodes[$index]} =~ ^name ]] && unset -v 'master_nodes[$index]' ; done
+    for index in "${!master_nodes[@]}" ; do [[ ${master_nodes[$index]} =~ ^type ]] && unset -v 'master_nodes[$index]' ; done
+    for index in "${!master_nodes[@]}" ; do [[ ${master_nodes[$index]} =~ ^ansible_ssh_user ]] && unset -v 'master_nodes[$index]' ; done
+    master_nodes=("${master_nodes[@]}")
+
+    for node_name in "${master_nodes[@]}"
+    do
+	:
+#	echo -e "${node_name}"
+	look_up=$(nslookup ${node_name} | grep "can't find" | wc -l)
+
 	if [[ ${look_up} -gt 0 ]]; then
 	    UNRESOLVED=1
 	    ERROR=1
@@ -1066,14 +1076,24 @@ function node_dnsresolve(){
 	    printout "${result}"
 	fi
     done
-    workers=$(awk '/\[worker\]/,/^$/' hosts_openshift | tail -n +2)
-    echo -e "${workers}" | while read -r line ; do
-	echo "${line}"
-        node_name=$(echo "${line}" | awk '{$1}')
-        look_up=$(nslookup ${node_name} | grep "Name" | wc -l)
+
+    workers=($(awk '/\[worker\]/,/^$/' hosts_openshift | tail -n +2))
+
+    for index in "${!workers[@]}" ; do [[ ${workers[$index]} =~ ^private_ip ]] && unset -v 'workers[$index]' ; done
+    for index in "${!workers[@]}" ; do [[ ${workers[$index]} =~ ^name ]] && unset -v 'workers[$index]' ; done
+    for index in "${!workers[@]}" ; do [[ ${workers[$index]} =~ ^type ]] && unset -v 'workers[$index]' ; done
+    for index in "${!workers[@]}" ; do [[ ${workers[$index]} =~ ^ansible_ssh_user ]] && unset -v 'workers[$index]' ; done
+    workers=("${workers[@]}")
+
+    for node_name in "${workers[@]}"
+    do
+        :
+#        echo -e "${node_name}"
+        look_up=$(nslookup ${node_name} | grep "can't find" | wc -l)
+
         if [[ ${look_up} -gt 0 ]]; then
             UNRESOLVED=1
-	    ERROR=1
+            ERROR=1
             log "ERROR: ${node_name} is unresolved by dns" result
             printout "${result}"
         fi
@@ -1149,7 +1169,7 @@ fi
 
 if [[ ${PRE} -eq 1 ]]; then
     validate_internet_connectivity
-#    node_dnsresolve
+    node_dnsresolve
     check_dnsconfiguration
     check_dnsresolve
     check_gateway
