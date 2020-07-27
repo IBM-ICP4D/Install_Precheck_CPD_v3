@@ -18,7 +18,7 @@ vi hosts_openshift
 sample_hosts_openshift file:
 ```
 [bastion]
-bastion_node_name private_ip=9.30.205.216 name=bastion type=bastion ansible_ssh_user=root
+bastion_node_name private_ip=XXX.XXX.XXX.XXX name=bastion type=bastion ansible_ssh_user=root
 
 [master]
 master0_node_name private_ip=10.87.103.68 name=master-01 type=master ansible_ssh_user=core
