@@ -1110,6 +1110,106 @@ function node_dnsresolve(){
     fi
 }
 
+function dns_record_check(){
+    output=""
+    echo -e "\nChecking dns record and wildcard entries" | tee -a ${OUTPUT}
+
+    echo -e "\033[1mPlease enter the name of your cluster.\033[0m
+If you don't know your cluster, enter the letter q to cancel
+the check so that you may go check your cluster name."
+    read cluster
+
+    if [[ ${cluster} == 'q' ]]; then
+        exit 1
+    fi
+
+    echo -e "\033[1mPlease enter the name of your domain.\033[0m
+If you don't know your domain, enter the letter q to cancel
+the check so that you may go check your domain name."
+    read domain
+
+    if [[ ${domain} == 'q' ]]; then
+        exit 1
+    fi
+
+    master_nodes=($(awk '/\[master\]/,/^$/' hosts_openshift | tail -n +2))
+
+    for index in "${!master_nodes[@]}" ; do [[ ${master_nodes[$index]} =~ ^private_ip ]] ; done
+#    for index in "${!master_nodes[@]}" ; do [[ ${master_nodes[$index]} =~ ^name ]] && unset -v 'master_nodes[$index]' ; done
+#    for index in "${!master_nodes[@]}" ; do [[ ${master_nodes[$index]} =~ ^type ]] && unset -v 'master_nodes[$index]' ; done
+#    for index in "${!master_nodes[@]}" ; do [[ ${master_nodes[$index]} =~ ^ansible_ssh_user ]] && unset -v 'master_nodes[$index]' ; done
+    master_nodes=("${master_nodes[@]}")
+    echo "${master_nodes[@]}"
+
+    num=1
+}
+
+
+function srv_dns_record_check(){
+    output=""
+    echo -e "\nChecking server dns record for etcd server" | tee -a ${OUTPUT}
+    
+    echo -e "\033[1mPlease enter the name of your cluster.\033[0m 
+If you don't know your cluster, enter the letter q to cancel
+the check so that you may go check your cluster name."
+    read cluster
+
+    if [[ ${cluster} == 'q' ]]; then
+	exit 1
+    fi
+
+    echo -e "\033[1mPlease enter the name of your domain.\033[0m
+If you don't know your domain, enter the letter q to cancel
+the check so that you may go check your domain name."
+    read domain
+
+    if [[ ${domain} == 'q' ]]; then
+	exit 1
+    fi
+
+    (nslookup -type=srv _etcd-server-ssl.${cluster}.${domain})
+
+    rc=$?
+    if [[ ${rc} -eq 1 ]]; then
+        log "WARNING: Could not find service." result
+        WARNING=1
+    else
+#	nslookup -type=srv _etcd-server-ssl.${cluster}.${domain}
+        log "[Passed]" result
+    fi
+    LOCALTEST=1
+    output+="$result"
+
+    if [[ ${LOCALTEST} -eq 1 ]]; then
+        printout "$output"
+    fi
+}
+
+function avx2_check(){
+    output=""
+    echo -e "\nChecking that avx2 is supported" | tee -a ${OUTPUT}
+    
+    if [[ ${OCP_311} -eq 1 ]] ; then
+        ansible-playbook -i hosts_openshift -l ${hosts} playbook_311/avx_check.yml > ${ANSIBLEOUT}
+    else
+        ansible-playbook -i hosts_openshift -l ${hosts} playbook_43/avx_check.yml > ${ANSIBLEOUT}
+    fi
+
+
+    if [[ `egrep 'unreachable=[1-9]|failed=[1-9]' ${ANSIBLEOUT}` ]]; then
+        log "WARNING: AVX is not supported by processor" result
+        cat ${ANSIBLEOUT} >> ${OUTPUT}
+        WARNING=1
+    else
+        log "[Passed]" result
+    fi
+    LOCALTEST=1
+    output+="$result"
+
+    if [[ ${LOCALTEST} -eq 1 ]]; then
+        printout "$output"
+    fi
+}
 
 #BEGIN CHECK
 PRE=0
@@ -1170,6 +1270,9 @@ fi
 if [[ ${PRE} -eq 1 ]]; then
     validate_internet_connectivity
     node_dnsresolve
+#     dns_record_check
+    srv_dns_record_check
+#    avx2_check
     check_dnsconfiguration
     check_dnsresolve
     check_gateway

@@ -1,0 +1,20 @@
+## Checking AVX2 supported
+---
+- hosts: all
+  gather_facts: yes
+
+  vars_files:
+   - ../vars/globals.yml
+
+  tasks:
+  - name: Populate Variable via Shell Command
+#    shell: cat /proc/cpuinfo | grep -i avx2 | wc -l
+    shell: cat {{ avx_location }} | grep -i avx2 | wc -l
+    register: avx
+    ignore_errors: True
+
+  - name: AVX2 Check
+    shell: echo "WARNING AVX2 is not supported on this node"
+    register: output
+    failed_when: avx < 1
+

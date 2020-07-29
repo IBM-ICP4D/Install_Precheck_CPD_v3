@@ -40,4 +40,6 @@ redhat_artifactory: registry.redhat.io
 ibm_website: ibm.com
 throughput_error: 35
 
+avx_location: /proc/cpuinfo
 haproxy_location: /etc/haproxy/haproxy.cfg
+
