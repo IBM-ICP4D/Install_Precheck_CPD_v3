@@ -1218,12 +1218,16 @@ the check so that you may go check your domain name."
 	exit 1
     fi
 
-    (nslookup -type=srv _etcd-server-ssl._tcp.${cluster}.${domain})
+    test_line=$(nslookup -type=srv _etcd-server-ssl._tcp.${cluster}.${domain} | grep '0 10 2380' | wc -l)
 
-    rc=$?
-    if [[ ${rc} -eq 1 ]]; then
-        log "WARNING: Could not find service." result
-        WARNING=1
+    master_nodes=($(awk '/\[master\]/,/^$/' hosts_openshift | tail -n +2))
+    mast_ips=($(printf '%s\n' "${master_nodes[@]}" | grep 'private_ip' | grep -Eo '([0-9]{1,}\.)+[0-9]{1,}'))
+    num_masters=$(echo "${#mast_ips[@]}")
+
+    nslookup -type=srv _etcd-server-ssl._tcp.${cluster}.${domain} | grep '0 10 2380'
+    if [[ ${test_line} -ne ${num_masters} ]]; then
+        log "ERROR: Records must have priority 0, weight 10, and port 2380." result
+        ERROR=1
     else
 #	nslookup -type=srv _etcd-server-ssl.${cluster}.${domain}
         log "[Passed]" result
@@ -1321,8 +1325,8 @@ fi
 if [[ ${PRE} -eq 1 ]]; then
     validate_internet_connectivity
     node_dnsresolve
-#    dns_record_check
-#    srv_dns_record_check
+    dns_record_check
+    srv_dns_record_check
     avx2_check
     check_dnsconfiguration
     check_dnsresolve
