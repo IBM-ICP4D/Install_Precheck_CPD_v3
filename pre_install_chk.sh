@@ -1113,6 +1113,7 @@ function node_dnsresolve(){
 function dns_record_check(){
     output=""
     echo -e "\nChecking dns record and wildcard entries" | tee -a ${OUTPUT}
+    node_er=0
 
     echo -e "\033[1mPlease enter the name of your cluster.\033[0m
 If you don't know your cluster, enter the letter q to cancel
@@ -1132,16 +1133,66 @@ the check so that you may go check your domain name."
         exit 1
     fi
 
+    bast_node=($(awk '/\[bastion\]/,/^$/' hosts_openshift | tail -n +2))
+
+    bast_ip=$(printf '%s\n' "${bast_node[@]}" | grep 'private_ip' | grep -Eo '([0-9]{1,}\.)+[0-9]{1,}')
+
+
+    #Check apps
+    apps_check=$(nslookup *.apps.${cluster}.${domain} | grep "${bast_ip}" | wc -l) 
+    if [[ ${apps_check} -eq 0 ]]; then
+	log "ERROR: nslookup *.apps.${cluster}.${domain} should return the bastion ip ${bast_ip} nslookup output is shown below" result
+	node_er=1
+	ERROR=1
+	printout "$result"
+	nslookup *.apps.${cluster}.${domain}
+    fi
+
+    #Check api
+    api_check=$(nslookup api.${cluster}.${domain} | grep "${bast_ip}" | wc -l)
+    if [[ ${api_check} -eq 0 ]]; then
+	log "ERROR: nslookup api.${cluster}.${domain} should return the bastion ip ${bast_ip} nslookup output is shown below" result
+        node_er=1
+        ERROR=1
+	printout "$result"
+	nslookup api.${cluster}.${domain}
+    fi
+
+    #Check api-int
+    int_check=$(nslookup api-int.${cluster}.${domain} | grep ${bast_ip} | wc -l)
+    if [[ ${int_check} -eq 0 ]]; then
+        log "ERROR: nslookup api-int.${cluster}.${domain} should return the bastion ip ${bast_ip} nslookup output is shown below" result
+   
+	node_er=1
+        ERROR=1
+	printout "$result"
+	nslookup api-int.${cluster}.${domain}
+    fi
+
     master_nodes=($(awk '/\[master\]/,/^$/' hosts_openshift | tail -n +2))
+    mast_ips=($(printf '%s\n' "${master_nodes[@]}" | grep 'private_ip' | grep -Eo '([0-9]{1,}\.)+[0-9]{1,}'))
 
-    for index in "${!master_nodes[@]}" ; do [[ ${master_nodes[$index]} =~ ^private_ip ]] ; done
-#    for index in "${!master_nodes[@]}" ; do [[ ${master_nodes[$index]} =~ ^name ]] && unset -v 'master_nodes[$index]' ; done
-#    for index in "${!master_nodes[@]}" ; do [[ ${master_nodes[$index]} =~ ^type ]] && unset -v 'master_nodes[$index]' ; done
-#    for index in "${!master_nodes[@]}" ; do [[ ${master_nodes[$index]} =~ ^ansible_ssh_user ]] && unset -v 'master_nodes[$index]' ; done
-    master_nodes=("${master_nodes[@]}")
-    echo "${master_nodes[@]}"
 
-    num=1
+    for ((i=0; i < ${#mast_ips[@]} ; i++))
+    do
+
+	etcd_check=$(nslookup etcd-${i}.${cluster}.${domain} | grep "${mast_ips[i]}" | wc -l)
+	if [[ ${etcd_check} -eq 0 ]]; then
+        log "ERROR: nslookup etcd-${i}.${cluster}.${domain} should return the master-${i} ip ${mast_ips[i]} nslookup output is shown below" result
+	
+        node_er=1
+        ERROR=1
+        printout "$result"
+	nslookup etcd-${i}.${cluster}.${domain}
+    fi
+    done
+
+    LOCALTEST=1
+    if [[ ${LOCALTEST} -eq 1 && ${node_er} -eq 0 ]]; then
+	log "[Passed]" result
+	output+=$result
+	printout "$output"
+    fi
 }
 
 
@@ -1167,7 +1218,7 @@ the check so that you may go check your domain name."
 	exit 1
     fi
 
-    (nslookup -type=srv _etcd-server-ssl.${cluster}.${domain})
+    (nslookup -type=srv _etcd-server-ssl._tcp.${cluster}.${domain})
 
     rc=$?
     if [[ ${rc} -eq 1 ]]; then
@@ -1270,9 +1321,9 @@ fi
 if [[ ${PRE} -eq 1 ]]; then
     validate_internet_connectivity
     node_dnsresolve
-#     dns_record_check
-    srv_dns_record_check
-#    avx2_check
+#    dns_record_check
+#    srv_dns_record_check
+    avx2_check
     check_dnsconfiguration
     check_dnsresolve
     check_gateway

@@ -12,11 +12,18 @@
   tasks:
   - name: Populate Variable via Shell Command
 #    shell: cat /proc/cpuinfo | grep -i avx2 | wc -l
-    shell: cat {{ avx_location }} | grep -i avx2 | wc -l
+    shell: cat {{ avx_location }} | grep -i avx2
     register: avx
     ignore_errors: True
 
+  - debug:
+      var: avx.stdout
+
   - name: AVX2 Check
-    shell: echo "WARNING AVX2 is not supported on this node"
+    shell: cat {{ avx_location }} | grep -i avx2 | wc -l
     register: output
-    failed_when: avx < 1
+    failed_when: output.stdout < 1
+
+  - debug:
+      var: output.stdout
+
