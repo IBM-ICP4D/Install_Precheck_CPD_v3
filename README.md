@@ -150,6 +150,9 @@ The current value of the variable tested will appear under the 'debug' task for 
 | Disk Latency | 50 Kb/sec | X | | |
 | Disk Throughput | 1 Gb/sec | X | | |
 | DNS Configuration | DNS must be enabled | X | | |
+| Node name resolution | All node names should be resolved by DNS | X | | |
+| DNS Record and WildCard Entries | \*.apps.\<cluster\>.domain, api.\<cluster\>.domain, api-int.\<cluster\>.domain should point to the load-balancer/bastion IP. etcd-index.\<cluster\>.domain should point to the corresponding master node IP. | X | | |
+| SRV DNS record for etcd server | Must have priority 0, weight 10, and port 2380 | X | | |
 | AVX2 | AVX2 supported by processor | X | | |
 | Resolving hostname via DNS | Hostname resolution enabled | X | X | |
 | Hostname in lowercase letters | Hostname must be all lowercase | X | | |
