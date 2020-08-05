@@ -150,12 +150,13 @@ The current value of the variable tested will appear under the 'debug' task for 
 | Disk Latency | 50 Kb/sec | X | | |
 | Disk Throughput | 1 Gb/sec | X | | |
 | DNS Configuration | DNS must be enabled | X | | |
+| AVX2 | AVX2 supported by processor | X | | |
 | Resolving hostname via DNS | Hostname resolution enabled | X | X | |
 | Hostname in lowercase letters | Hostname must be all lowercase | X | | |
 | Default Gateway | Route for default gateway exists | X | | |
 | Validate Internet Connectivity | | X | | |
 | Valid IPs | | X | | |
-| Validate Network Speed | | X | | |
+| Validate Network Speed between Nodes | At least 1 GB bandwidth | X | | |
 | Check subnet | | X | | |
 | Disk Type | Must be xfs file system | X | | |
 | Unblocked urls | | X | | |
