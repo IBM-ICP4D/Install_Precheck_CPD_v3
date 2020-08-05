@@ -1,4 +1,4 @@
-u## Checking if luks is enabled
+## Checking if luks is enabled
 
 ---
 - hosts: all
