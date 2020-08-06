@@ -18,11 +18,13 @@
     register: disk_latency
     ignore_errors: True
   - debug:
-       msg: "Disk latency is {{disk_latency.stdout_lines}}"
+       msg: "Disk latency is {{disk_latency.stdout | trim}}"
+  - debug:
+      var: disk_latency
 
   - debug:
       var: latencyrate
   - name: Disk Latency Check
     shell: echo "ERROR Disk latency test failed. By copying 512 kB, the time must be shorter than 60s, recommended to be shorter than 10s"
     register: output
-    failed_when: (disk_latency.stdout_lines | int) > (latencyrate | int)
+    failed_when: (disk_latency.stdout | trim | int) > (latencyrate | int)

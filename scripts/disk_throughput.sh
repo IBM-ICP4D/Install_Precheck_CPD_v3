@@ -4,8 +4,8 @@
 
 CRIODOCKERINSTALLPATH=/var/lib/docker
 
-dd if=/dev/zero of=${CRIODOCKERINSTALLPATH}/testfile bs=1G count=1 oflag=dsync &> output
+sudo dd if=/dev/zero of=${CRIODOCKERINSTALLPATH}/testfile bs=1G count=1 oflag=dsync &> output
 
-res=$(cat output | tail -n 1 | awk '{print $6}')
+res=$(cat output | tail -n 1 | awk '{print $8}')
 # writing this since bc may not be default support in customer environment
 echo $res | grep -E -o "[0-9]+" | head -n 1
