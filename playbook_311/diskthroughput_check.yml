@@ -19,9 +19,9 @@
     register: disk_throughput
     ignore_errors: True
   - debug:
-       msg: "Disk throughput is {{disk_throughput.stdout_lines}}"
+       msg: "Disk throughput is {{disk_throughput.stdout | trim}}"
 
   - name: Disk Latency Check
     shell: echo "ERROR Disk throughput test failed. By copying 1.1 GB, the time must be shorter than 35s, recommended to be shorter than 5s"
     register: output
-    failed_when: (disk_throughput.stdout_lines | int) > (throughputerror | int)
+    failed_when: (disk_throughput.stdout | trim | int) > (throughputerror | int)
