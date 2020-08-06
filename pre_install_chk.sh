@@ -154,6 +154,7 @@ function check_openshift_version() {
 
 function check_crio_version() {
     output=""
+    failed=0
     echo -e "\nChecking CRI-O Version. Note: this test is being tested on master nodes." | tee -a ${OUTPUT}
     
     if [[ ${OCP_311} -eq 1 ]] ; then
@@ -166,6 +167,7 @@ function check_crio_version() {
         log "ERROR: Version of CRI-O must be at least 1.13." result
         cat ${ANSIBLEOUT} >> ${OUTPUT}
         ERROR=1
+	failed=1
     else
         log "[Passed]" result
     fi
@@ -176,10 +178,20 @@ function check_crio_version() {
         printout "$output"
     fi
 
+    if [[ ${failed} -eq 1 ]]; then
+        echo -e "These nodes failed the test/were unreachable:"
+        egrep 'unreachable=[1-9]|failed=[1-9]' ${ANSIBLEOUT} | while read line
+        do
+            :
+            echo "${line}" | awk '{print $1, $5, $6}'
+        done
+    fi
+
 } 
 
 function check_timeout_settings(){
     output=""
+    failed=0
     echo -e "\nChecking Timeout Settings on Load Balancer" | tee -a ${OUTPUT}
     
     if [[ ${OCP_311} -eq 1 ]] ; then
@@ -195,6 +207,7 @@ Please update your /etc/haproxy/haproxy.cfg file.
 Visit ${GLOBAL[0]} for update commands" result
         cat ${ANSIBLEOUT} >> ${OUTPUT}
         ERROR=1
+	failed=1
     else
         log "[Passed]" result
     fi
@@ -203,6 +216,15 @@ Visit ${GLOBAL[0]} for update commands" result
 
     if [[ ${LOCALTEST} -eq 1 ]]; then
         printout "$output"
+    fi
+
+    if [[ ${failed} -eq 1 ]]; then
+	echo -e "These nodes failed the test/were unreachable:"
+	egrep 'unreachable=[1-9]|failed=[1-9]' ${ANSIBLEOUT} | while read line
+	do
+	    :
+	    echo "${line}" | awk '{print $1, $5, $6}'
+	done
     fi
  
 }
@@ -293,6 +315,7 @@ function validate_network_speed(){
 
 function check_subnet(){
     output=""
+    failed=0
     echo -e "\nChecking subnet" | tee -a ${OUTPUT}
     
     if [[ ${OCP_311} -eq 1 ]] ; then
@@ -305,6 +328,7 @@ function check_subnet(){
         log "ERROR: Host ip not in range" result
         cat ${ANSIBLEOUT} >> ${OUTPUT}
         ERROR=1
+	failed=1
     else
         log "[Passed]" result
     fi
@@ -315,10 +339,20 @@ function check_subnet(){
         printout "$output"
     fi
 
+    if [[ ${failed} -eq 1 ]]; then
+        echo -e "These nodes failed the test/were unreachable:"
+        egrep 'unreachable=[1-9]|failed=[1-9]' ${ANSIBLEOUT} | while read line
+        do
+            :
+            echo "${line}" | awk '{print $1, $5, $6}'
+        done
+    fi
+
 }
 
 function check_dnsconfiguration(){
     output=""
+    failed=0
     echo -e "\nChecking DNS Configuration" | tee -a ${OUTPUT}
     
     if [[ ${OCP_311} -eq 1 ]] ; then
@@ -332,6 +366,7 @@ function check_dnsconfiguration(){
         log "ERROR: DNS is not properly setup. Could not find a proper nameserver in /etc/resolv.conf " result
         cat ${ANSIBLEOUT} >> ${OUTPUT}
         ERROR=1
+	failed=1
     else
         log "[Passed]" result
     fi
@@ -341,10 +376,20 @@ function check_dnsconfiguration(){
     if [[ ${LOCALTEST} -eq 1 ]]; then
         printout "$output"
     fi
+
+    if [[ ${failed} -eq 1 ]]; then
+        echo -e "These nodes failed the test/were unreachable:"
+        egrep 'unreachable=[1-9]|failed=[1-9]' ${ANSIBLEOUT} | while read line
+        do
+            :
+            echo "${line}" | awk '{print $1, $5, $6}'
+        done
+    fi
 }
 
 function check_processor() {
     output=""
+    failed=0
     echo -e "\nChecking Processor Type" | tee -a ${OUTPUT}
     
     if [[ ${OCP_311} -eq 1 ]] ; then
@@ -358,6 +403,7 @@ function check_processor() {
 	log "ERROR: Processor type must be x86_64 or ppc64" result
 	cat ${ANSIBLEOUT} >> ${OUTPUT}
 	ERROR=1
+	failed=1
     else
 	log "[PASSED]" result
     fi
@@ -367,10 +413,20 @@ function check_processor() {
     if [[ ${LOCALTEST} -eq 1 ]]; then
 	printout "$output"
     fi
+
+    if [[ ${failed} -eq 1 ]]; then
+        echo -e "These nodes failed the test/were unreachable:"
+        egrep 'unreachable=[1-9]|failed=[1-9]' ${ANSIBLEOUT} | while read line
+        do
+            :
+            echo "${line}" | awk '{print $1, $5, $6}'
+        done
+    fi
 }
 
 function check_dockerdir_type(){
     output=""
+    failed=0
     echo -e "\nChecking XFS FSTYPE for docker storage" | tee -a ${OUTPUT}
     
     if [[ ${OCP_311} -eq 1 ]] ; then
@@ -384,6 +440,7 @@ function check_dockerdir_type(){
         log "ERROR: Docker target filesystem must be formatted with ftype=1. Please reformat or move the docker location" result
         cat ${ANSIBLEOUT} >> ${OUTPUT}
         ERROR=1
+	failed=1
     else
         log "[Passed]" result
     fi
@@ -393,10 +450,20 @@ function check_dockerdir_type(){
     if [[ ${LOCALTEST} -eq 1 ]]; then
         printout "$output"
     fi
+
+    if [[ ${failed} -eq 1 ]]; then
+        echo -e "These nodes failed the test/were unreachable:"
+        egrep 'unreachable=[1-9]|failed=[1-9]' ${ANSIBLEOUT} | while read line
+        do
+            :
+            echo "${line}" | awk '{print $1, $5, $6}'
+        done
+    fi
 }
 
 function check_dnsresolve(){
     output=""
+    failed=0
     echo -e "\nChecking hostname can resolve via  DNS" | tee -a ${OUTPUT}
     
     if [[ ${OCP_311} -eq 1 ]] ; then
@@ -415,6 +482,7 @@ function check_dnsresolve(){
             cat ${ANSIBLEOUT} >> ${OUTPUT}
             ERROR=1
         fi
+	failed=1
     else
         log "[Passed]" result
     fi
@@ -424,10 +492,20 @@ function check_dnsresolve(){
     if [[ ${LOCALTEST} -eq 1 ]]; then
         printout "$output"
     fi
+
+    if [[ ${failed} -eq 1 ]]; then
+        echo -e "These nodes failed the test/were unreachable:"
+        egrep 'unreachable=[1-9]|failed=[1-9]' ${ANSIBLEOUT} | while read line
+        do
+            :
+            echo "${line}" | awk '{print $1, $5, $6}'
+        done
+    fi
 }
 
 function check_gateway(){
     output=""
+    failed=0
     echo -e "\nChecking Default Gateway" | tee -a ${OUTPUT}
     
     if [[ ${OCP_311} -eq 1 ]] ; then
@@ -441,6 +519,7 @@ function check_gateway(){
         log "ERROR: default gateway is not setup " result
         cat ${ANSIBLEOUT} >> ${OUTPUT}
         ERROR=1
+	failed=1
     else
         log "[Passed]" result
     fi
@@ -450,10 +529,20 @@ function check_gateway(){
     if [[ ${LOCALTEST} -eq 1 ]]; then
         printout "$output"
     fi
+
+    if [[ ${failed} -eq 1 ]]; then
+        echo -e "These nodes failed the test/were unreachable:"
+        egrep 'unreachable=[1-9]|failed=[1-9]' ${ANSIBLEOUT} | while read line
+        do
+            :
+            echo "${line}" | awk '{print $1, $5, $6}'
+        done
+    fi
 }
 
 function check_hostname(){
     output=""
+    failed=0
     echo -e "\nChecking if hostname is in lowercase characters" | tee -a ${OUTPUT}
     
     if [[ ${OCP_311} -eq 1 ]] ; then
@@ -467,6 +556,7 @@ function check_hostname(){
         log "ERROR: Only lowercase characters are supported in the hostname" result
         cat ${ANSIBLEOUT} >> ${OUTPUT}
         ERROR=1
+	failed=1
     else
         log "[Passed]" result
     fi
@@ -476,10 +566,20 @@ function check_hostname(){
     if [[ ${LOCALTEST} -eq 1 ]]; then
         printout "$output"
     fi
+
+    if [[ ${failed} -eq 1 ]]; then
+        echo -e "These nodes failed the test/were unreachable:"
+        egrep 'unreachable=[1-9]|failed=[1-9]' ${ANSIBLEOUT} | while read line
+        do
+            :
+            echo "${line}" | awk '{print $1, $5, $6}'
+        done
+    fi
 }
 
 function check_disklatency(){
     output=""
+    failed=0
     echo -e "\nChecking Disk Latency" | tee -a ${OUTPUT}
     
     if [[ ${OCP_311} -eq 1 ]] ; then
@@ -493,6 +593,7 @@ function check_disklatency(){
         log "ERROR: Disk latency test failed. By copying 512 kB, the time must be shorter than 60s, recommended to be shorter than 10s." result
         cat ${ANSIBLEOUT} >> ${OUTPUT}
         ERROR=1
+	failed=1
     else
         log "[Passed]" result
     fi
@@ -502,10 +603,20 @@ function check_disklatency(){
     if [[ ${LOCALTEST} -eq 1 ]]; then
         printout "$output"
     fi
+
+    if [[ ${failed} -eq 1 ]]; then
+        echo -e "These nodes failed the test/were unreachable:"
+        egrep 'unreachable=[1-9]|failed=[1-9]' ${ANSIBLEOUT} | while read line
+        do
+            :
+            echo "${line}" | awk '{print $1, $5, $6}'
+        done
+    fi
 }
 
 function check_diskthroughput(){
     output=""
+    failed=0
     echo -e "\nChecking Disk Throughput" | tee -a ${OUTPUT}
     
     if [[ ${OCP_311} -eq 1 ]] ; then
@@ -519,6 +630,7 @@ function check_diskthroughput(){
         log "ERROR: Disk throughput test failed. By copying 1.1 GB, the time must be shorter than 35s, recommended to be shorter than 5s" result
         cat ${ANSIBLEOUT} >> ${OUTPUT}
         ERROR=1
+	failed=1
     else
         log "[Passed]" result
     fi
@@ -527,6 +639,15 @@ function check_diskthroughput(){
 
     if [[ ${LOCALTEST} -eq 1 ]]; then
         printout "$output"
+    fi
+
+    if [[ ${failed} -eq 1 ]]; then
+        echo -e "These nodes failed the test/were unreachable:"
+        egrep 'unreachable=[1-9]|failed=[1-9]' ${ANSIBLEOUT} | while read line
+        do
+            :
+            echo "${line}" | awk '{print $1, $5, $6}'
+        done
     fi
 }
 
@@ -550,6 +671,15 @@ function check_unblocked_urls(){
         WARNING=1
         BLOCKED=1
         printout "$result"
+	failed=1
+	if [[ ${failed} -eq 1 ]]; then
+        echo -e "These nodes failed the test/were unreachable:"
+        egrep 'unreachable=[1-9]|failed=[1-9]' ${ANSIBLEOUT} | while read line
+        do
+            :
+            echo "${line}" | awk '{print $1, $5, $6}'
+        done
+        fi
     fi
     done
 
@@ -562,6 +692,15 @@ function check_unblocked_urls(){
     if [[ ${LOCALTEST} -eq 1 && ${BLOCKED} -eq 0 ]]; then
         printout "$output"
     fi
+
+#    if [[ ${failed} -eq 1 ]]; then
+#        echo -e "These nodes failed the test/were unreachable:"
+#        egrep 'unreachable=[1-9]|failed=[1-9]' ${ANSIBLEOUT} | while read line
+#        do
+#            :
+#            echo "${line}" | awk '{print $1, $5, $6}'
+#        done
+#    fi
 }
 
 function check_ibmartifactory(){
@@ -606,6 +745,7 @@ function check_redhatartifactory(){
 
 function check_fix_clocksync(){
     output=""
+    failed=0
     #if [[ ${FIX} -eq 1 ]]; then
     #    echo -e "\nFixing timesync status" | tee -a ${OUTPUT}
     #    ansible-playbook -i hosts_openshift -l ${hosts} playbook/clocksync_fix.yml > ${ANSIBLEOUT}
@@ -624,6 +764,7 @@ function check_fix_clocksync(){
         log "ERROR: System clock is currently not synchronised, use ntpd or chrony to sync time" result
         cat ${ANSIBLEOUT} >> ${OUTPUT}
         ERROR=1
+	failed=1
     else
         log "[Passed]" result
     fi
@@ -633,10 +774,20 @@ function check_fix_clocksync(){
     if [[ ${LOCALTEST} -eq 1 ]]; then
         printout "$output"
     fi
+
+    if [[ ${failed} -eq 1 ]]; then
+        echo -e "These nodes failed the test/were unreachable:"
+        egrep 'unreachable=[1-9]|failed=[1-9]' ${ANSIBLEOUT} | while read line
+        do
+            :
+            echo "${line}" | awk '{print $1, $5, $6}'
+        done
+    fi
 }
 
 function check_kernel_vm(){
     output=""
+    failed=0
     echo -e "\nChecking kernel virtual memory on compute nodes" | tee -a ${OUTPUT}
     
     if [[ ${OCP_311} -eq 1 ]] ; then
@@ -649,7 +800,8 @@ function check_kernel_vm(){
     if [[ `egrep 'unreachable=[1-9]|failed=[1-9]' ${ANSIBLEOUT}` ]]; then
         log "ERROR: Kernel virtual memory on compute nodes should be set to at least 262144. Please update the vm.max_map_count parameter in /etc/sysctl.conf" result
         cat ${ANSIBLEOUT} >> ${OUTPUT}
-        WARNING=1
+        ERROR=1
+	failed=1
     else
         log "[Passed]" result
     fi
@@ -660,10 +812,19 @@ function check_kernel_vm(){
         printout "$output"
     fi
 
+    if [[ ${failed} -eq 1 ]]; then
+        echo -e "These nodes failed the test/were unreachable:"
+        egrep 'unreachable=[1-9]|failed=[1-9]' ${ANSIBLEOUT} | while read line
+        do
+            :
+            echo "${line}" | awk '{print $1, $5, $6}'
+        done
+    fi
 }
 
 function check_message_limit(){
     output=""
+    failed=0
     echo -e "\nChecking message limits on compute nodes" | tee -a ${OUTPUT}
     
     if [[ ${OCP_311} -eq 1 ]] ; then
@@ -678,9 +839,19 @@ function check_message_limit(){
         cat ${ANSIBLEOUT} >> ${OUTPUT}
         ERROR=1
 	ERR=1
+	failed=1
 	printout "$result"
     fi
 
+    if [[ ${failed} -eq 1 ]]; then
+        echo -e "These nodes failed the test/were unreachable:"
+        egrep 'unreachable=[1-9]|failed=[1-9]' ${ANSIBLEOUT} | while read line
+        do
+            :
+            echo "${line}" | awk '{print $1, $5, $6}'
+        done
+    fi
+    failed=0
     if [[ ${OCP_311} -eq 1 ]] ; then
     	ansible-playbook -i hosts_openshift -l ${compute} playbook_311/max_queue_size_check.yml > ${ANSIBLEOUT}
     else 
@@ -693,9 +864,19 @@ function check_message_limit(){
         cat ${ANSIBLEOUT} >> ${OUTPUT}
         ERROR=1
 	ERR=1
+	failed=1
 	printout "$result"
     fi
 
+    if [[ ${failed} -eq 1 ]]; then
+        echo -e "These nodes failed the test/were unreachable:"
+        egrep 'unreachable=[1-9]|failed=[1-9]' ${ANSIBLEOUT} | while read line
+        do
+            :
+            echo "${line}" | awk '{print $1, $5, $6}'
+        done
+    fi
+    failed=0
     if [[ ${OCP_311} -eq 1 ]] ; then
     	ansible-playbook -i hosts_openshift -l ${compute} playbook_311/max_num_queue_check.yml > ${ANSIBLEOUT}
     else 
@@ -708,9 +889,18 @@ function check_message_limit(){
         cat ${ANSIBLEOUT} >> ${OUTPUT}
         ERROR=1
 	ERR=1
+	failed=1
 	printout "$result"
     fi
 
+    if [[ ${failed} -eq 1 ]]; then
+        echo -e "These nodes failed the test/were unreachable:"
+        egrep 'unreachable=[1-9]|failed=[1-9]' ${ANSIBLEOUT} | while read line
+        do
+            :
+            echo "${line}" | awk '{print $1, $5, $6}'
+        done
+    fi
     if [[ ${ERR} -eq 0 ]]; then
         log "[Passed]" result
     fi
@@ -727,6 +917,7 @@ function check_message_limit(){
 
 function check_shm_limit(){
     output=""
+    failed=0
     echo -e "\nChecking shared memory limits on compute nodes" | tee -a ${OUTPUT}
     
     if [[ ${OCP_311} -eq 1 ]] ; then
@@ -741,9 +932,19 @@ function check_shm_limit(){
         cat ${ANSIBLEOUT} >> ${OUTPUT}
         ERROR=1
 	ERR=1
+	failed=1
 	printout "$result"
     fi
 
+    if [[ ${failed} -eq 1 ]]; then
+        echo -e "These nodes failed the test/were unreachable:"
+        egrep 'unreachable=[1-9]|failed=[1-9]' ${ANSIBLEOUT} | while read line
+        do
+            :
+            echo "${line}" | awk '{print $1, $5, $6}'
+        done
+    fi
+    failed=0
     if [[ ${OCP_311} -eq 1 ]] ; then
     	ansible-playbook -i hosts_openshift -l ${compute} playbook_311/max_shm_check.yml > ${ANSIBLEOUT}
     else 
@@ -755,8 +956,19 @@ function check_shm_limit(){
         cat ${ANSIBLEOUT} >> ${OUTPUT}
         ERROR=1
 	ERR=1
+	failed=1
 	printout "$result"
     fi
+
+    if [[ ${failed} -eq 1 ]]; then
+        echo -e "These nodes failed the test/were unreachable:"
+        egrep 'unreachable=[1-9]|failed=[1-9]' ${ANSIBLEOUT} | while read line
+        do
+            :
+            echo "${line}" | awk '{print $1, $5, $6}'
+        done
+    fi
+    failed=0
 
     if [[ ${OCP_311} -eq 1 ]] ; then
     	ansible-playbook -i hosts_openshift -l ${compute} playbook_311/max_num_shm_check.yml > ${ANSIBLEOUT}
@@ -769,7 +981,17 @@ function check_shm_limit(){
         cat ${ANSIBLEOUT} >> ${OUTPUT}
         ERROR=1
 	ERR=1
+	failed=1
 	printout "$result"
+    fi
+
+    if [[ ${failed} -eq 1 ]]; then
+        echo -e "These nodes failed the test/were unreachable:"
+        egrep 'unreachable=[1-9]|failed=[1-9]' ${ANSIBLEOUT} | while read line
+        do
+            :
+            echo "${line}" | awk '{print $1, $5, $6}'
+        done
     fi
 
     if [[ ${ERR} -eq 0 ]]; then
@@ -787,6 +1009,7 @@ function check_shm_limit(){
 
 function check_disk_encryption() {
     output=""
+    failed=0
     echo -e "\nChecking Disk Encryption. Note: This test is being tested on all core nodes" | tee -a ${OUTPUT}
     
     if [[ ${OCP_311} -eq 1 ]] ; then
@@ -800,6 +1023,7 @@ function check_disk_encryption() {
         log "WARNING: LUKS Encryption is not enabled." result
         cat ${ANSIBLEOUT} >> ${OUTPUT}
         WARNING=1
+	failed=1
     else
         log "[Passed]" result
     fi
@@ -810,10 +1034,19 @@ function check_disk_encryption() {
         printout "$output"
     fi
 
+    if [[ ${failed} -eq 1 ]]; then
+        echo -e "These nodes failed the test/were unreachable:"
+        egrep 'unreachable=[1-9]|failed=[1-9]' ${ANSIBLEOUT} | while read line
+        do
+            :
+            echo "${line}" | awk '{print $1, $5, $6}'
+        done
+    fi
 }
 
 function check_sem_limit() {
     output=""
+    failed=0
     echo -e "\nChecking kernel semaphore limit on compute nodes" | tee -a ${OUTPUT}
     
     if [[ ${OCP_311} -eq 1 ]] ; then
@@ -827,6 +1060,7 @@ function check_sem_limit() {
         log "ERROR: kernel.sem values must be at least 250 1024000 100 16384. Please update /etc/sysctl.conf" result
         cat ${ANSIBLEOUT} >> ${OUTPUT}
         ERROR=1
+	failed=1
     else
         log "[Passed]" result
     fi
@@ -836,10 +1070,20 @@ function check_sem_limit() {
     if [[ ${LOCALTEST} -eq 1 ]]; then
         printout "$output"
     fi
+
+    if [[ ${failed} -eq 1 ]]; then
+        echo -e "These nodes failed the test/were unreachable:"
+        egrep 'unreachable=[1-9]|failed=[1-9]' ${ANSIBLEOUT} | while read line
+        do
+            :
+            echo "${line}" | awk '{print $1, $5, $6}'
+        done
+    fi
 }
 
 function check_max_files(){
     output=""
+    failed=0
     echo -e "\nChecking maximum number of open files on compute nodes" | tee -a ${OUTPUT}
     
     if [[ ${OCP_311} -eq 1 ]] ; then
@@ -853,6 +1097,7 @@ function check_max_files(){
         log "ERROR: Maximum number of open files should be at least 66560. Please update /etc/sysconfig/docker" result
         cat ${ANSIBLEOUT} >> ${OUTPUT}
         ERROR=1
+	failed=1
     else
         log "[Passed]" result
     fi
@@ -862,10 +1107,20 @@ function check_max_files(){
     if [[ ${LOCALTEST} -eq 1 ]]; then
         printout "$output"
     fi
+
+    if [[ ${failed} -eq 1 ]]; then
+        echo -e "These nodes failed the test/were unreachable:"
+        egrep 'unreachable=[1-9]|failed=[1-9]' ${ANSIBLEOUT} | while read line
+        do
+            :
+            echo "${line}" | awk '{print $1, $5, $6}'
+        done
+    fi
 }
 
 function check_max_process(){
     output=""
+    failed=0
     echo -e "\nChecking maximum number of processes on compute nodes" | tee -a ${OUTPUT}
     
     if [[ ${OCP_311} -eq 1 ]] ; then
@@ -879,6 +1134,7 @@ function check_max_process(){
         log "ERROR: Maximum number of processes should be at least 12288. Please update /etc/sysconfig/docker" result
         cat ${ANSIBLEOUT} >> ${OUTPUT}
         ERROR=1
+	failed=1
     else
         log "[Passed]" result
     fi
@@ -887,6 +1143,15 @@ function check_max_process(){
 
     if [[ ${LOCALTEST} -eq 1 ]]; then
         printout "$output"
+    fi
+
+    if [[ ${failed} -eq 1 ]]; then
+        echo -e "These nodes failed the test/were unreachable:"
+        egrep 'unreachable=[1-9]|failed=[1-9]' ${ANSIBLEOUT} | while read line
+        do
+            :
+            echo "${line}" | awk '{print $1, $5, $6}'
+        done
     fi
 }
 
@@ -934,14 +1199,14 @@ function check_cluster_admin(){
 
 function check_admin_role(){
     output=""
-    echo -e "\nChecking for admin role" | tee -a ${OUTPUT}
+    echo -e "\nChecking for cpd-admin-role" | tee -a ${OUTPUT}
     whoami=$(oc whoami)
     echo "whoami = ${whoami}"
     exists=$(oc get rolebindings admin | egrep '${whoami}')
     echo "${exists}"
 
     if [[ ${exists} == "" ]]; then
-        log "ERROR: output of oc whoami does not exist in oc get rolebindings admin. Ask cluster-admin for binding." result
+        log "ERROR: user must be assigned cpd-admin-role. Ask cluster-admin for binding." result
         ERROR=1
     else
         log "[Passed]" result
@@ -1242,6 +1507,7 @@ the check so that you may go check your domain name."
 
 function avx2_check(){
     output=""
+    failed=0
     echo -e "\nChecking that avx2 is supported" | tee -a ${OUTPUT}
     
     if [[ ${OCP_311} -eq 1 ]] ; then
@@ -1255,6 +1521,7 @@ function avx2_check(){
         log "WARNING: AVX is not supported by processor" result
         cat ${ANSIBLEOUT} >> ${OUTPUT}
         WARNING=1
+	failed=1
     else
         log "[Passed]" result
     fi
@@ -1263,6 +1530,15 @@ function avx2_check(){
 
     if [[ ${LOCALTEST} -eq 1 ]]; then
         printout "$output"
+    fi
+
+    if [[ ${failed} -eq 1 ]]; then
+        echo -e "These nodes failed the test/were unreachable:"
+        egrep 'unreachable=[1-9]|failed=[1-9]' ${ANSIBLEOUT} | while read line
+        do
+            :
+            echo "${line}" | awk '{print $1, $5, $6}'
+        done
     fi
 }
 
@@ -1363,10 +1639,10 @@ elif [[ ${PRE_CPD} -eq 1 ]]; then
 fi
 
 if [[ ${ERROR} -eq 1 ]]; then
-    echo -e "\nFinished with ERROR, please check ${OUTPUT}"
+    echo -e "\n\033[91m\033[1mFinished with ERROR, please check ${OUTPUT} for more detailed Ansible error output\033[0m"
     exit 2
 elif [[ ${WARNING} -eq 1 ]]; then
-    echo -e "\nFinished with WARNING, please check ${OUTPUT}"
+    echo -e "\n\033[1mFinished with WARNING, please check ${OUTPUT} for more detailed Ansible warning output\033[0m"
     exit 1
 else
     echo -e "\nFinished successfully! This node meets the requirement" | tee -a ${OUTPUT}
