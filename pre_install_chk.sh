@@ -61,6 +61,7 @@ URLS=(
         https://www.ibm.com/support/knowledgecenter
         http://registry.ibmcloudpack.com/
         https://docs.portworx.com
+	http://mirrors.portworx.com
     )
 
 
