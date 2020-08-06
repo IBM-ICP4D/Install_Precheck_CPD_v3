@@ -134,8 +134,13 @@ function contains() {
 function check_openshift_version() {
     output=""
     echo -e "\nChecking Openshift Version" | tee -a ${OUTPUT}
-
-    vers=$(oc version | grep "Server Version:" | grep -Eo "([0-9]{1,}\.)+[0-9]{1,}")
+    
+    three_eleven=$(oc version | grep "openshift v3\.11\.") 
+    if [[ ${three_eleven} != "" ]]; then
+	vers=$(echo "${three_eleven}" | grep -Eo "3\.11\.[0-9]{1,}")
+    else
+        vers=$(oc version | grep "Server Version:" | grep -Eo "([0-9]{1,}\.)+[0-9]{1,}")
+    fi
     echo "${vers}"
          
     if [[ $(contains "${OCP_VER[@]}" "${vers}") == "n" ]]; then
