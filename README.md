@@ -100,7 +100,7 @@ iperf3, a networking utility used in this script for checking the network bandwi
 ```
 yum install -y iperf3
 ```
-Make sure the core machine you are installing to is the node listed at the top of your \[master\] group in your inventory file. To install on the core master machine, push the iperf3 rpm file included in this directory from the bastion node to the master node's home directory with this command:
+Make sure all coreOS nodes listed under the \[core\] group in your inventory file. Push the iperf3 rpm file included in this directory from the bastion node to all core node's home directory with this command:
 ```
 scp iperf3-3.1.3-1.fc24.x86_64.rpm core@<master_node_name>:~/ 
 ```
