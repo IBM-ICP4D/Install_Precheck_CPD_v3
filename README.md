@@ -82,7 +82,14 @@ ansible_python_interpreter=/var/home/core/pypy/bin/pypy
 ```	
 ./setup_bastion.sh
 ```
-Since RHCOS machines do not have the necessary python libraries to run the pre-checks, this script will prep the machines with an ansible-galaxy 	install. After you are done with all pre-install checks, you may run:
+Since RHCOS machines do not have the necessary python libraries to run the pre-checks, this script will prep the machines with an ansible-galaxy install. 
+Make sure all coreOS nodes listed under the \[core\] group in your inventory file. Push the pypy-5.6-linux_x86_64-portable.tar.bz2 zip file included in pypy directory from the bastion node to all core node's home directory and extract the zip file with following commands:
+```
+scp pypy/pypy-5.6-linux_x86_64-portable.tar.bz2 core@<coreOS_node_name>:~/ 
+ssh core@<coreOS_node_name> tar xjvf pypy-5.6-linux_x86_64-portable.tar.bz2
+```
+
+After you are done with all pre-install checks, you may run:
 ```
 ./setup_bastion.sh -r
 ```
@@ -100,7 +107,7 @@ iperf3, a networking utility used in this script for checking the network bandwi
 ```
 yum install -y iperf3
 ```
-Make sure all coreOS nodes listed under the \[core\] group in your inventory file. Push the iperf3 rpm file included in this directory from the bastion node to all core node's home directory with this command:
+Push the iperf3 rpm file included in this directory from the bastion node to all core node's home directory with this command:
 ```
 scp iperf3-3.1.3-1.fc24.x86_64.rpm core@<coreOS_node_name>:~/ 
 ```
