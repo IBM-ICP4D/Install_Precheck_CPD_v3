@@ -102,7 +102,7 @@ yum install -y iperf3
 ```
 Make sure all coreOS nodes listed under the \[core\] group in your inventory file. Push the iperf3 rpm file included in this directory from the bastion node to all core node's home directory with this command:
 ```
-scp iperf3-3.1.3-1.fc24.x86_64.rpm core@<master_node_name>:~/ 
+scp iperf3-3.1.3-1.fc24.x86_64.rpm core@<coreOS_node_name>:~/ 
 ```
 If your master 1 is called master0.example.com, then the code will be:
 ```
