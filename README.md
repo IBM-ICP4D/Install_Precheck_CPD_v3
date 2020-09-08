@@ -82,9 +82,9 @@ ansible_python_interpreter=/var/home/core/pypy/bin/pypy
 ```	
 ./setup_bastion.sh
 ```
-Since RHCOS machines do not have the necessary python libraries to run the pre-checks, this script will prep the machines with an ansible-galaxy install. 
+Since RHCOS machines do not have the necessary python libraries to run the pre-checks, this script will prep the machines with an ansible-galaxy role. 
 Make sure all coreOS nodes listed under the \[core\] group in your inventory file. 
-This script will perform following to prepare all core nodes:
+In addition this script will perform following to prepare all core nodes:
 ```
 scp pypy/pypy-5.6-linux_x86_64-portable.tar.bz2 iperf3-3.1.3-1.fc24.x86_64.rpm core@<coreOS_node_name>:~/
 ssh core@<coreOS_node_name> tar xjvf pypy-5.6-linux_x86_64-portable.tar.bz2 
@@ -93,11 +93,10 @@ ssh core@<coreOS_node_name> sudo rpm-ostree install iperf3-3.1.3-1.fc24.x86_64.r
 
 MAKE SURE REBOOT ALL YOUR CORE NODES AFTER INSTALL IPREF.
 
-After you are done with all pre-install checks, you may run:
+After you are done with all pre-install checks, you may run following to remove the ansible-galaxy role:
 ```
 ./setup_bastion.sh -r
 ```
-to remove the install.
 
 5. INSTALL iperf, netaddr
 
@@ -107,7 +106,7 @@ Netaddr, a python package used in this script for obtaining ip addresses, can be
 ```
 yum install -y python-netaddr
 ```
-iperf3, a networking utility used in this script for checking the network bandwidth between the bastion and the master node listed at the TOP OF YOUR MASTER GROUP in your inventory file, can be installed on the bastion machine with:
+The iperf3, a networking utility used in this script for checking the network bandwidth between the bastion and the master node listed at the TOP OF YOUR MASTER GROUP in your inventory file, can be installed on the bastion machine with:
 ```
 yum install -y iperf3
 ```
