@@ -41,6 +41,8 @@ OCP_VER=(
 	4.5.1 
 	4.5.2
 	)
+THREE_ELEVEN_MIN=188
+FOUR_THREE_MIN=13
 
 #These urls should be unblocked. The function check_unblocked_urls will validate that these are reachable
 URLS=(
@@ -135,20 +137,27 @@ function check_openshift_version() {
     output=""
     echo -e "\nChecking Openshift Version" | tee -a ${OUTPUT}
     
-    three_eleven=$(oc version | grep "openshift v3\.11\.") 
+    three_eleven=$(oc version | grep "openshift v3\.11\." | awk -F "v" '{print $2}')
+    four_three=$(oc version | grep "Server Version:" | grep -Eo "([0-9]{1,}\.)+[0-9]{1,}")
     if [[ ${three_eleven} != "" ]]; then
-	vers=$(echo "${three_eleven}" | grep -Eo "3\.11\.[0-9]{1,}")
+        vers=$(echo "${three_eleven}" | grep -Eo "3\.11\.[0-9]{1,}")
+        three_eleven_minor_vers=$(oc version | grep "openshift v3\.11\." | awk -F "v3.11." '{print $2}')
     else
         vers=$(oc version | grep "Server Version:" | grep -Eo "([0-9]{1,}\.)+[0-9]{1,}")
+        four_three_minor_vers=$(oc version | grep "Server Version:" | grep -Eo "([0-9]{1,}\.)+[0-9]{1,}" | awk -F "4.3." '{print $2}')
     fi
     echo "${vers}"
-         
-    if [[ $(contains "${OCP_VER[@]}" "${vers}") == "n" ]]; then
-        log "ERROR: Your version of Openshift is not compatible with Cloud Pak 4 Data. If on 3.11, update to at least 3.11.188. If on 4.3, update to at least version 4.3.13" result
-        ERROR=1
-    else
+ 
+
+    if [[ ( ! -z ${three_eleven} && $three_eleven_minor_vers -ge ${THREE_ELEVEN_MIN} ) ]]; then
         log "[Passed]" result
+    elif [[ ( ! -z ${four_three} && $four_three_minor_vers -ge ${FOUR_THREE_MIN} ) ]]; then
+        log "[Passed]" result
+    else
+        log "ERROR: Your version of Openshift is not compatible with Cloud Pak for Data. If on 3.11, update to at least 3.11.188. If on 4.3, update to at least version 4.3.13" result
+        ERROR=1
     fi
+
     LOCALTEST=1
     output+="$result"
 
