@@ -27,7 +27,8 @@ else
    else
       yum install -y python-netaddr
       yum install -y iperf3
-      ansible-galaxy install akirak.coreos-python
+      tar xzvf ./ansible_roles/master.tar.gz -C ~/.ansible/roles/
+      mv ~/.ansible/roles/ansible-coreos-python-master ~/.ansible/roles/akirak.coreos-python
       cat pypy/pypy-5.6-linux_x86_64-portable.tar.bz2.parta? > pypy/pypy-5.6-linux_x86_64-portable.tar.bz2
       setup_core
    fi
