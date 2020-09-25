@@ -17,6 +17,17 @@ setup_core()
    done
 }
 
+setup_ansible_role()
+{
+echo "
+---
+# Installing role from local file
+- name: akirak.coreos-python
+  src: file://`pwd`/ansible_roles/master.tar.gz
+" > requirements.yml
+ansible-galaxy install -r requirements.yml
+}
+
 ### Setup Bastion Node
 if ! [[ -x "$(command -v ansible)" ]]; then
    echo "Error: ansible is not installed. Use 'yum install ansible' to install it." >&2
@@ -27,8 +38,9 @@ else
    else
       yum install -y python-netaddr
       yum install -y iperf3
-      tar xzvf ./ansible_roles/master.tar.gz -C ~/.ansible/roles/
-      mv ~/.ansible/roles/ansible-coreos-python-master ~/.ansible/roles/akirak.coreos-python
+      #tar xzvf ./ansible_roles/master.tar.gz -C ~/.ansible/roles/
+      #mv ~/.ansible/roles/ansible-coreos-python-master ~/.ansible/roles/akirak.coreos-python
+      setup_ansible_role
       cat pypy/pypy-5.6-linux_x86_64-portable.tar.bz2.parta? > pypy/pypy-5.6-linux_x86_64-portable.tar.bz2
       setup_core
    fi
