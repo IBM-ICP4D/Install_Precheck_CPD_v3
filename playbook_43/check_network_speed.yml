@@ -16,8 +16,8 @@
   hosts: master[0]
   gather_facts: false
   
-  roles:
-   - akirak.coreos-python
+#  roles:
+#   - akirak.coreos-python
   
   vars: 
     bast_ip: "{{ hostvars[groups['bastion'][0]]['ansible_env'].SSH_CONNECTION.split(' ')[2] }}"
