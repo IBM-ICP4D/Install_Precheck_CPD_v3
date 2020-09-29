@@ -1335,6 +1335,16 @@ function node_dnsresolve(){
     output=""
     UNRESOLVED=0
     echo -e "\nChecking that all node names are resolved by DNS" | tee -a ${OUTPUT}
+    
+    command -v nslookup
+    if [[ "${?}" -ne 0 ]]; then
+         UNRESOLVED=1
+         WARNING=1
+         log "WARNING: nslookup command cound not be found. Install nslookup using; yum install bind-utils" result
+         printout "${result}"
+         return
+    fi
+
     master_nodes=($(awk '/\[master\]/,/^$/' hosts_openshift | tail -n +2))
 
     for index in "${!master_nodes[@]}" ; do [[ ${master_nodes[$index]} =~ ^private_ip ]] && unset -v 'master_nodes[$index]' ; done
