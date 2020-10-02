@@ -17,6 +17,22 @@ setup_core()
    done
 }
 
+### Setup ansible on PowerPC platform
+setup_ppc()
+{
+   yum install -y ./ppc64le/python_ppc/python36-3.6.8-2.module+el8.1.0+3334+5cb623d7.ppc64le.rpm \
+       ./ppc64le/python_ppc/python3-pip-9.0.3-16.el8.noarch.rpm \
+       ./ppc64le/python_ppc/python3-setuptools-39.2.0-5.el8.noarch.rpm
+
+   export PATH=~/.local/bin:$PATH
+   tar xzvf ppc64le/ansible_ppc/pip-20.2.3.tar.gz -C ./ppc64le/ansible_ppc/
+   tar xzvf ppc64le/ansible_ppc/wheel-0.35.1.tar.gz -C ./ppc64le/ansible_ppc/
+   tar xzvf ppc64le/ansible_ppc/ansible-2.10.0.tar.gz -C ./ppc64le/ansible_ppc/
+
+   python3 -m pip install --user -e ./ppc64le/ansible_ppc/wheel-0.35.1 ./ppc64le/ansible_ppc/pip-20.2.3
+   python3 -m pip install --user -e ./ppc64le/ansible_ppc/ansible-2.10.0
+}
+
 setup_ansible_role()
 {
 echo "
@@ -29,6 +45,10 @@ ansible-galaxy install -r requirements.yml
 }
 
 ### Setup Bastion Node
+if [[ `uname -p` == "ppc64le" ]]; then
+   setup_ppc
+fi
+
 if ! [[ -x "$(command -v ansible)" ]]; then
    echo "Error: ansible is not installed. Use 'yum install ansible' to install it." >&2
    exit 1
@@ -45,5 +65,3 @@ else
       setup_core
    fi
 fi
-
-
