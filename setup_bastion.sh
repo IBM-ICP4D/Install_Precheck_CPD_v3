@@ -25,13 +25,8 @@ setup_ppc()
        ./ppc64le/python_ppc/python3-setuptools-39.2.0-5.el8.noarch.rpm
 
    export PATH=~/.local/bin:$PATH
-   #tar xzvf ppc64le/ansible_ppc/pip-20.2.3.tar.gz -C ./ppc64le/ansible_ppc/
-   #tar xzvf ppc64le/ansible_ppc/wheel-0.35.1.tar.gz -C ./ppc64le/ansible_ppc/
-   #tar xzvf ppc64le/ansible_ppc/ansible-2.10.0.tar.gz -C ./ppc64le/ansible_ppc/
-
    python3 -m pip install --user ./ppc64le/ansible_ppc/wheel-0.35.1.tar.gz \
             ./ppc64le/ansible_ppc/pip-20.2.3.tar.gz
-   #python3 -m pip install --user -e ./ppc64le/ansible_ppc/ansible-2.10.0
    
    python3 -m pip install --user ./ppc64le/ansible_ppc/MarkupSafe-1.1.1.tar.gz \
             ./ppc64le/ansible_ppc/PyYAML-5.3.1.tar.gz \
