@@ -25,12 +25,21 @@ setup_ppc()
        ./ppc64le/python_ppc/python3-setuptools-39.2.0-5.el8.noarch.rpm
 
    export PATH=~/.local/bin:$PATH
-   tar xzvf ppc64le/ansible_ppc/pip-20.2.3.tar.gz -C ./ppc64le/ansible_ppc/
-   tar xzvf ppc64le/ansible_ppc/wheel-0.35.1.tar.gz -C ./ppc64le/ansible_ppc/
-   tar xzvf ppc64le/ansible_ppc/ansible-2.10.0.tar.gz -C ./ppc64le/ansible_ppc/
+   #tar xzvf ppc64le/ansible_ppc/pip-20.2.3.tar.gz -C ./ppc64le/ansible_ppc/
+   #tar xzvf ppc64le/ansible_ppc/wheel-0.35.1.tar.gz -C ./ppc64le/ansible_ppc/
+   #tar xzvf ppc64le/ansible_ppc/ansible-2.10.0.tar.gz -C ./ppc64le/ansible_ppc/
 
-   python3 -m pip install --user -e ./ppc64le/ansible_ppc/wheel-0.35.1 ./ppc64le/ansible_ppc/pip-20.2.3
-   python3 -m pip install --user -e ./ppc64le/ansible_ppc/ansible-2.10.0
+   python3 -m pip install --user ./ppc64le/ansible_ppc/wheel-0.35.1.tar.gz \
+            ./ppc64le/ansible_ppc/pip-20.2.3.tar.gz
+   #python3 -m pip install --user -e ./ppc64le/ansible_ppc/ansible-2.10.0
+   
+   python3 -m pip install --user ./ppc64le/ansible_ppc/MarkupSafe-1.1.1.tar.gz \
+            ./ppc64le/ansible_ppc/PyYAML-5.3.1.tar.gz \
+            ./ppc64le/ansible_ppc/ansible-2.10.0.tar.gz \
+            ./ppc64le/ansible_ppc/ansible-base-2.10.2.tar.gz \
+            ./ppc64le/ansible_ppc/Jinja2-2.11.2-py2.py3-none-any.whl \
+            ./ppc64le/ansible_ppc/packaging-20.4-py2.py3-none-any.whl \
+            ./ppc64le/ansible_ppc/pyparsing-2.4.7-py2.py3-none-any.whl
 }
 
 setup_ansible_role()
