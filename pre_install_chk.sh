@@ -1573,6 +1573,7 @@ POST=0
 PRE_CPD=0
 OCP_311=0
 
+export PATH=~/.local/bin:$PATH
 if [[ $# -lt 1 ]]; then
     usage
     exit 1
