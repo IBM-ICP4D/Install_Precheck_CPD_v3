@@ -49,6 +49,7 @@ ansible-galaxy install -r requirements.yml
 }
 
 ### Setup Bastion Node
+export PATH=~/.local/bin:$PATH
 if [[ `uname -p` == "ppc64le" ]]; then
    setup_ppc
 fi
