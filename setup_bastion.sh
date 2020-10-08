@@ -35,6 +35,10 @@ setup_ppc()
             ./ppc64le/ansible_ppc/Jinja2-2.11.2-py2.py3-none-any.whl \
             ./ppc64le/ansible_ppc/packaging-20.4-py2.py3-none-any.whl \
             ./ppc64le/ansible_ppc/pyparsing-2.4.7-py2.py3-none-any.whl
+            
+   python3 -m pip install --user ./ppc64le/ansible_ppc/netaddr-0.8.0-py2.py3-none-any.whl \
+            ./ppc64le/ansible_ppc/importlib_resources-3.0.0-py2.py3-none-any.whl \
+            ./ppc64le/ansible_ppc/zipp-3.3.0-py3-none-any.whl
 }
 
 setup_ansible_role()
