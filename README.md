@@ -1,6 +1,6 @@
 # Install_Precheck_CPD_v3
 # Description
-This project contains a set of pre-installation checks designed to validate that your system is compatible with RedHat Openshift 4.3.13+ and Cloud Pak 4 Data 3.0.1 installations.
+This project contains a set of pre-installation checks designed to validate that your system is compatible with RedHat Openshift 4.x and Cloud Pak 4 Data 3.0.1 installations.
 # Setup
 1. CLONE git repository
 ```
@@ -39,7 +39,7 @@ worker1_node_name private_ip=10.87.103.108 name=worker-02 type=worker ansible_ss
 worker2_node_name private_ip=10.87.103.96 name=worker-03 type=worker ansible_ssh_user=core
 
 #THE [ROOT] GROUP IS FOR USERS WHO HAVE MACHINES THAT DO NOT RUN COREOS. IF THE MACHINES IN YOUR
-#CLUSTER ALL USE COREOS(I.E. OPENSHIFT 4.3), THEN YOU MAY LEAVE THIS GROUP COMMENTED OUT OR DELETED.
+#CLUSTER ALL USE COREOS(I.E. OPENSHIFT 4.x), THEN YOU MAY LEAVE THIS GROUP COMMENTED OUT OR DELETED.
 #IF YOUR MACHINES DO NOT RUN COREOS, YOU WILL NEED TO:
 # 1. UNCOMMENT THE [ROOT] GROUP
 # 2. COMMENT OUT OR DELETE THE [CORE] GROUP
@@ -124,7 +124,7 @@ Arguments:
 	                                                         The valid arguments to --host_type are the names 
 								 of the groupings of nodes listed in hosts_openshift.
 
-	--ocp_ver=[311]                               	 	 To specify openshift version (Default is 4.3). 
+	--ocp_ver=[311]                               	 	 To specify openshift version (Default is 4.x). 
 								 This option should be used if ocp version is 3.11
 								 or machines in the cluster are not core machines"
 
@@ -163,7 +163,7 @@ The current value of the variable tested will appear under the 'debug' task for 
 | Unblocked urls | | X | | |
 | Clock Sync | Synchronize computer system clock on all nodes within 500ms | | X | |
 | Disk Encryption | LUKS enabled | | X | |
-| Openshift Version | at least 4.3.13 | | X | |
+| Openshift Version | 3.11, 4.3, 4.5| | X | |
 | CRI-O Version | at least 1.13 | | X | |
 | Timeout Settings (Load Balancer only) | HAProxy timeout should be set to 5 minutes | | X | |
 | Max open files on compute | at least 66560 | | X | |
