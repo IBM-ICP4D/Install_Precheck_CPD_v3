@@ -5,8 +5,8 @@
 #    - akirak.coreos-python
 
   tasks:
-  - debug:
-    var: ansible_architecture
+  - name: Print Processor
+    debug: var=ansible_architecture
       
   - name: Check Processor Type
     shell: echo "Error Processor type must be x86_64 or ppc64"
