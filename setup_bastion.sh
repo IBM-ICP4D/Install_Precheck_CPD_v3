@@ -4,8 +4,16 @@
 
 #!/bin/bash
 
-### Setup Core Nodes
-setup_core()
+### Setup ansible on bastion - x86_64 platform
+setup_x86_bastion()
+{
+   yum install -y python-netaddr
+   yum install -y iperf3
+   cat pypy/pypy-5.6-linux_x86_64-portable.tar.bz2.parta? > pypy/pypy-5.6-linux_x86_64-portable.tar.bz2
+}
+
+### Setup Core Nodes - x86_64 platform
+setup_x86_core()
 {
    for node in `awk '/\[core\]/{f=1}f' hosts_openshift | awk '{if ($5 == "ansible_ssh_user=core") print $1}'`
    do 
@@ -17,8 +25,8 @@ setup_core()
    done
 }
 
-### Setup ansible on PowerPC platform
-setup_ppc()
+### Setup ansible on bastion - PowerPC platform
+setup_ppc_bastion()
 {
    yum install -y ./ppc64le/python_ppc/python36-3.6.8-2.module+el8.1.0+3334+5cb623d7.ppc64le.rpm \
        ./ppc64le/python_ppc/python3-pip-9.0.3-16.el8.noarch.rpm \
@@ -41,6 +49,23 @@ setup_ppc()
             ./ppc64le/ansible_ppc/zipp-3.3.0-py3-none-any.whl
 }
 
+### Setup Core Nodes - PowerPC platform
+### Mase sure run it after execute setup_ppc_bastion()
+setup_ppc_core()
+{
+   for node in `awk '/\[core\]/{f=1}f' hosts_openshift | awk '{if ($5 == "ansible_ssh_user=core") print $1}'`
+   do 
+      echo ""
+      echo Preparing: $node
+      scp pypy/pypy3.6-v7.3.1-ppc64le.tar.bz2 core@$node:~/
+      ssh core@$node tar xjvf pypy3.6-v7.3.1-ppc64le.tar.bz2 > /dev/null
+
+      #Copy Python from bastion to core nodes
+      ssh core@$node mkdir /var/home/core/bin
+      scp /usr/bin/python3 core@$node:/var/home/core/bin
+   done
+}
+
 setup_ansible_role()
 {
 echo "
@@ -54,9 +79,6 @@ ansible-galaxy install -r requirements.yml
 
 ### Setup Bastion Node
 export PATH=~/.local/bin:$PATH
-if [[ `uname -p` == "ppc64le" ]]; then
-   setup_ppc
-fi
 
 if ! [[ -x "$(command -v ansible)" ]]; then
    echo "Error: ansible is not installed. Use 'yum install ansible' to install it." >&2
@@ -65,12 +87,13 @@ else
    if [[ $1 == "-r" ]]; then
       ansible-galaxy remove akirak.coreos-python
    else
-      yum install -y python-netaddr
-      yum install -y iperf3
-      #tar xzvf ./ansible_roles/master.tar.gz -C ~/.ansible/roles/
-      #mv ~/.ansible/roles/ansible-coreos-python-master ~/.ansible/roles/akirak.coreos-python
       setup_ansible_role
-      cat pypy/pypy-5.6-linux_x86_64-portable.tar.bz2.parta? > pypy/pypy-5.6-linux_x86_64-portable.tar.bz2
-      setup_core
+      if [[ `uname -p` == "ppc64le" ]]; then
+         setup_ppc_bastion
+         setup_ppc_core
+      else # for x86_64
+         setup_x86_bastion
+         setup_x86_core
+      fi
    fi
 fi
