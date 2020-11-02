@@ -80,13 +80,15 @@ ansible-galaxy install -r requirements.yml
 ### Setup Bastion Node
 export PATH=~/.local/bin:$PATH
 
-if ! [[ -x "$(command -v ansible)" ]]; then
+if ! [[ -x "$(command -v ansible)" ]] && [[ `uname -p` == "x86_64" ]]; then
    echo "Error: ansible is not installed. Use 'yum install ansible' to install it." >&2
    exit 1
 else
    if [[ $1 == "-r" ]]; then
       ansible-galaxy remove akirak.coreos-python
    else
+      yum install -y python-netaddr
+      yum install -y iperf3
       setup_ansible_role
       if [[ `uname -p` == "ppc64le" ]]; then
          setup_ppc_bastion
