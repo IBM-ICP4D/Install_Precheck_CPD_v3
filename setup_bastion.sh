@@ -9,6 +9,7 @@ setup_x86_bastion()
 {
    yum install -y python-netaddr
    yum install -y iperf3
+   setup_ansible_role
    cat pypy/pypy-5.6-linux_x86_64-portable.tar.bz2.parta? > pypy/pypy-5.6-linux_x86_64-portable.tar.bz2
 }
 
@@ -28,6 +29,9 @@ setup_x86_core()
 ### Setup ansible on bastion - PowerPC platform
 setup_ppc_bastion()
 {
+   yum install -y python-netaddr
+   yum install -y iperf3
+   setup_ansible_role
    yum install -y ./ppc64le/python_ppc/python36-3.6.8-2.module+el8.1.0+3334+5cb623d7.ppc64le.rpm \
        ./ppc64le/python_ppc/python3-pip-9.0.3-16.el8.noarch.rpm \
        ./ppc64le/python_ppc/python3-setuptools-39.2.0-5.el8.noarch.rpm
@@ -87,9 +91,6 @@ else
    if [[ $1 == "-r" ]]; then
       ansible-galaxy remove akirak.coreos-python
    else
-      yum install -y python-netaddr
-      yum install -y iperf3
-      setup_ansible_role
       if [[ `uname -p` == "ppc64le" ]]; then
          setup_ppc_bastion
          setup_ppc_core
