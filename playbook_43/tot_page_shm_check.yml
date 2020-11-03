@@ -5,8 +5,8 @@
   gather_facts: false
 
 
-  roles:
-    - akirak.coreos-python
+# roles:
+#    - akirak.coreos-python
 
   tasks:
   - name: Populate kern_shmall Variable
