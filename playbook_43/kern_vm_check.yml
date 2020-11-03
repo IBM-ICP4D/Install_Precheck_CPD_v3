@@ -4,8 +4,8 @@
 - hosts: all
   gather_facts: false
 
-  roles:
-    - akirak.coreos-python
+#  roles:
+#    - akirak.coreos-python
 
   tasks:
   - name: Populate Variable
