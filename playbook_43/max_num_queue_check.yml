@@ -4,18 +4,18 @@
 - hosts: all
   gather_facts: false
 
-  roles:
-    - akirak.coreos-python
+#  roles:
+#    - akirak.coreos-python
 
   tasks:
   - name: Populate msg_mni Variable
-    shell: sysctl kernel.msgmni
+    shell: sysctl kernel.msgmni|cut -d'=' -f 2
     register: msg_mni
 
   - debug:
       var: msg_mni.stdout
 
   - name: Check Maximum Number of Queue Identifiers
-    shell: grep -Eo [0-9]* <<< "{{ msg_mni.stdout }}"
+    shell: echo "{{ msg_mni.stdout }}"
     register: output2
-    failed_when: output2.stdout < 32768
+    failed_when: output2.stdout|int < 32768
