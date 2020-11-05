@@ -9,14 +9,13 @@
 
   tasks:
   - name: Populate msg_max Variable
-    shell: sysctl kernel.msgmax
+    shell: sysctl kernel.msgmax|cut -d'=' -f 2
     register: msg_max
 
   - debug:
       var: msg_max.stdout
 
   - name: Check Maximum Message Size
-    shell: grep -Eo [0-9]* <<< "{{ msg_max.stdout }}"
+    shell: echo "{{ msg_max.stdout }}"
     register: output
-    failed_when: output.stdout < 65536
-
+    failed_when: output.stdout|int < 65536
