@@ -10,13 +10,13 @@
 
   tasks:
   - name: Populate kern_shmall Variable
-    shell: sysctl kernel.shmall
+    shell: sysctl kernel.shmall|cut -d'=' -f 2
     register: kern_shmall
 
   - debug:
       var: kern_shmall.stdout
 
   - name: Check total number of shared memory pages
-    shell: grep -Eo [0-9]* <<< "{{ kern_shmall.stdout }}"
+    shell: echo "{{ kern_shmall.stdout }}"
     register: output
     failed_when: output.stdout|int < 33554432
