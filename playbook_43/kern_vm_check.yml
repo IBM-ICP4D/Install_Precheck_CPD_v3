@@ -9,13 +9,13 @@
 
   tasks:
   - name: Populate Variable
-    shell: sysctl vm.max_map_count
+    shell: sysctl vm.max_map_count|cut -d'=' -f 2
     register: vm
-    
+
   - debug:
       var: vm.stdout
 
   - name: Check Kernel VM
-    shell: grep -Eo [0-9]* <<< "{{ vm.stdout }}"
+    shell: echo "{{ vm.stdout }}"
     register: output
-    failed_when: output.stdout < 262144
+    failed_when: output.stdout|int < 262144
