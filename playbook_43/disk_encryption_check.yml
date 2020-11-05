@@ -4,8 +4,8 @@
 - hosts: all
   gather_facts: false
 
-  roles:
-    - akirak.coreos-python
+#  roles:
+#    - akirak.coreos-python
 
   tasks:
   - name: Populate Variable
@@ -18,7 +18,7 @@
   - name: Check luks enabled
     shell: grep 'crypto_LUKS' <<< "{{ luks_device.stdout }}" | wc -l
     register: num_luks
-    failed_when: num_luks.stdout == 0
+    failed_when: num_luks.stdout|int == 0
 
   - debug:
       var: num_luks.stdout
