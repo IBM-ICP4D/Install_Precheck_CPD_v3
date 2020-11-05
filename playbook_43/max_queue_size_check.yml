@@ -4,18 +4,18 @@
 - hosts: all
   gather_facts: false
 
-  roles:
-    - akirak.coreos-python
+#  roles:
+#    - akirak.coreos-python
 
   tasks:
   - name: Populate msg_mnb Variable
-    shell: sysctl kernel.msgmnb
+    shell: sysctl kernel.msgmnb|cut -d'=' -f 2
     register: msg_mnb
 
   - debug:
       var: msg_mnb.stdout
 
   - name: Check Maximum Queue Size in bytes
-    shell: grep -Eo [0-9]* <<< "{{ msg_mnb.stdout }}"
+    shell: echo "{{ msg_mnb.stdout }}"
     register: output2
-    failed_when: output2.stdout < 65536
+    failed_when: output2.stdout|int < 65536
