@@ -4,8 +4,8 @@
 
   become: yes
 
-  roles:
-    - akirak.coreos-python
+#  roles:
+#    - akirak.coreos-python
 
   tasks:
   - name: Check closksync
