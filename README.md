@@ -55,7 +55,10 @@ worker2_node_name private_ip=10.87.103.96 name=worker-03 type=worker ansible_ssh
 
 [core:vars]
 ansible_ssh_user=core
+# IF PROCESSOR TYPE IS x86_64 UNCOMMENT FOLLOWING LINE 
 ansible_python_interpreter=/var/home/core/pypy/bin/pypy
+# IF PROCESSOR TYPE IS ppc64le UNCOMMENT FOLLOWING LINE 
+#ansible_python_interpreter=/var/home/core/bin/python3
 ```
 Example Cluster:
 - RHCOS master node named master0.example.com with ip address=10.87.103.97
