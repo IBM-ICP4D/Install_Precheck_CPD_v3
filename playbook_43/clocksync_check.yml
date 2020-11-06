@@ -9,6 +9,6 @@
 
   tasks:
   - name: Check closksync
-    shell: ntpstat
+    shell: chronyc tracking
     register: output
     failed_when: "output.rc != 0"
