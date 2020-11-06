@@ -12,38 +12,35 @@
 
   tasks:
   - name: Populate client Variable
-    shell: grep 'timeout client' {{ haproxy_location }}
+    shell: grep 'timeout client' {{ haproxy_location }}|awk '{print $3}'
     register: client
 
   - debug:
       var: client.stdout
 
   - name: Populate server variable
-    shell: grep 'timeout server' {{ haproxy_location }}
+    shell: grep 'timeout server' {{ haproxy_location }}|awk '{print $3}'
     register: server
 
   - debug:
       var: server.stdout
 
   - name: Determine if client in seconds or minutes
-    shell: grep -Eo '(s$|m$)' <<< "{{ client.stdout }}"
+    shell: echo "{{ client.stdout }}" | grep -Eo '(s$|m$)'
     register: client_time_units
 
   - name: Check client timeout settings
-    shell: grep -Eo [0-9]* <<< "{{client.stdout }}"
+    shell: echo "{{client.stdout }}" | grep -Eo [0-9]*
     register: client_time
     failed_when: (client_time_units.stdout == 's' and client_time.stdout|int < 300) or
                  (client_time_units.stdout == 'm' and client_time.stdout|int < 5)
 
   - name: Determine if server in seconds or minutes
-    shell: grep -Eo '(s$|m$)' <<< "{{ server.stdout }}"
+    shell: echo "{{ server.stdout }}" | grep -Eo '(s$|m$)'
     register: server_time_units
 
   - name: Check server timeout settings
-    shell: grep -Eo [0-9]* <<< "{{server.stdout }}"
+    shell: echo "{{server.stdout }}" | grep -Eo [0-9]*
     register: server_time
     failed_when: (server_time_units.stdout == 's' and server_time.stdout|int < 300) or
                  (server_time_units.stdout == 'm' and server_time.stdout|int < 5)
-
-
-
