@@ -166,7 +166,7 @@ The current value of the variable tested will appear under the 'debug' task for 
 | Unblocked urls | | X | | |
 | Clock Sync | Synchronize computer system clock on all nodes within 500ms | | X | |
 | Disk Encryption | LUKS enabled | | X | |
-| Openshift Version | 3.11, 4.3, 4.5| | X | |
+| Openshift Version | 3.11, 4.3, 4.5, 4.6| | X | |
 | CRI-O Version | at least 1.13 | | X | |
 | Timeout Settings (Load Balancer only) | HAProxy timeout should be set to 5 minutes | | X | |
 | Max open files on compute | at least 66560 | | X | |
