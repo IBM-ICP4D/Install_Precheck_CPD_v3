@@ -144,7 +144,7 @@ If any test fails, you can view the results of its playbook in /tmp/preInstallCh
 
 The current value of the variable tested will appear under the 'debug' task for that particular playbook.
 
-# Validation List
+# Pre-check Validation List
 | Validation | Requirement | Pre-OCP | Post-OCP | Pre-CPD |
 | --- | --- | --- | --- | --- |
 | Processor Type | x86_64, ppc64 | X | X | |
