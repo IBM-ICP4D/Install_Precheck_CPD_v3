@@ -202,6 +202,7 @@ The machines that are being tested should be be able to reach these links:
         http://registry.ibmcloudpack.com/
         https://docs.portworx.com
 	http://mirrors.portworx.com
+	https://raw.github.com
 	
 One of the pre-openshift tests will check that these are reachable.
 
